@@ -1,6 +1,6 @@
 from peers import PeerClass
 import sys
-
+from messageHandler import Message
 
 def readPeerInfo():
     peers = {}

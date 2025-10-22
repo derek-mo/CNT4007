@@ -21,13 +21,19 @@ def receiveHandshake(client_socket):
     return peerId
 
 class PeerClass:
-    def __init__(self, peer_id, host, port, has_file, otherPeerInfo):
+    def __init__(self, peer_id, host, port, has_file, otherPeerInfo, NumberOfPreferredNeighbors, UnchokingInterval, OptimisticUnchokingInterval, FileName, FileSize, PieceSize):
         self.peer_id = peer_id
         self.host = host
         self.port = port
         self.has_file = has_file
         self.otherPeerInfo = otherPeerInfo
         self.PeersConnections = {}
+        self.NumberOfPreferredNeighbors = NumberOfPreferredNeighbors
+        self.UnchokingInterval = UnchokingInterval
+        self.OptimisticUnchokingInterval = OptimisticUnchokingInterval
+        self.FileName = FileName
+        self.FileSize = FileSize
+        self.PieceSize = PieceSize
 
     def createServerSocket(self):
         server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -45,7 +51,7 @@ class PeerClass:
             # peer accepts a TCP connection from other peer (peer is connected from peer))
             otherPeerId = next((pid for pid, socket in self.PeersConnections.items() if socket == client_socket), None)
             with open("../log_peer_{}.log".format(self.peer_id), "a") as log_file:
-                log_file.write("{}: Peer {} accepted connection from {}\n".format(datetime.datetime.now().strftime("%c"), self.peer_id, otherPeerId)) # need access to other peer id
+                log_file.write("{}: Peer {} is connected from Peer {}\n".format(datetime.datetime.now().strftime("%c"), self.peer_id, otherPeerId)) # need access to other peer id
             
 
     def connectToPeer(self):
@@ -60,10 +66,12 @@ class PeerClass:
                     print("Peer {}: Handshake successful with peer {}".format(self.peer_id, receivedPeerId))
                     self.PeersConnections[receivedPeerId] = client_socket
                     # Further communication logic would go here
+                    # Peer will send a bitfield message to other peer
+                    
                     # Writing log logic
                     # peer makes a TCP connection to other peer
                     with open("../log_peer_{}.log".format(self.peer_id), "a") as log_file:
-                        log_file.write("{}: Peer {} made connection to peer {}\n".format(datetime.datetime.now().strftime("%c"), self.peer_id, otherPeerId))
+                        log_file.write("{}: Peer {} makes a connection to Peer {}\n".format(datetime.datetime.now().strftime("%c"), self.peer_id, otherPeerId))
                         
                 except Exception as e:
                     print("Peer {}: Failed to connect to peer {} at {}:{} - {}".format(self.peer_id, otherPeerId, otherPeerHost, otherPeerPort, e))
@@ -86,6 +94,9 @@ class PeerClass:
             sendHandshake(client_socket, self.peer_id)
             print("Peer {}: Handshake response sent to peer {}".format(self.peer_id, receivedPeerId))
             self.PeersConnections[receivedPeerId] = client_socket
+            
+            # Further communication logic would go here
+            # Peer will send a bitfield message to other peer
         except Exception as e:
             print("Peer {}: Handshake failed - {}".format(self.peer_id, e))
 

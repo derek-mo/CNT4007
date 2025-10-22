@@ -1,4 +1,4 @@
-
+import datetime
 
 class Message:
     def __init__(self, msg_type, payload=b''):
@@ -19,53 +19,74 @@ class Message:
         return Message(msg_type, payload)
     
 class MessageHandler:
-    def __init__(self, peerId):
-        self.peerId = peerId
+    def __init__(self, peer): # essentially who are we handling the message for
+        self.peer = peer
 
-    def sendMessage(self, connectedSocket, msg):
+    def sendMessage(self, socket_connected, msg, peer_receiving_msg):
         try:
             encoded_msg = msg.encode()
-            connectedSocket.sendall(encoded_msg)
-            print(f"Peer {self.peerId}: Sent message type {msg.msg_type} with payload: {msg.payload}")
+            socket_connected.sendall(encoded_msg)
+            print(f"Peer {self.peer.peer_id}: Sent message type {msg.msg_type} with payload: {msg.payload} to Peer {peer_receiving_msg}")
         except Exception as e:
-            print(f"Peer {self.peerId}: Error sending message - {e}")
+            print(f"Peer {self.peer.peer_id}: Error sending message - {e}")
     
-    def receiveMessage(self, connectedSocket):
+    def receiveMessage(self, socket_connected, peer_sending_msg):
         try:
-            length_bytes = connectedSocket.recv(4)
+            length_bytes = socket_connected.recv(4)
             if not length_bytes:
                 return None
             length = int.from_bytes(length_bytes, byteorder='big')
-            msg_type_byte = connectedSocket.recv(1)
-            payload = connectedSocket.recv(length - 1)  # -1 for the message type byte
-            msg = Message.decode(length_bytes + msg_type_byte + payload)
-            print(f"Peer {self.peerId}: Received message type {msg.msg_type} with payload: {msg.payload}")
+            msg_data = socket_connected.recv(length)
+            full_data = length_bytes + msg_data
+            msg = Message.decode(full_data)
+            print(f"Peer {self.peer.peer_id}: Received message type {msg.msg_type} with payload: {msg.payload} from Peer {peer_sending_msg}")
             return msg
         except Exception as e:
-            print(f"Peer {self.peerId}: Error receiving message - {e}")
+            print(f"Peer {self.peer.peer_id}: Error receiving message - {e}")
             return None
         
-    def handleIncomingMessages(self, connectedSocket):
+        
+    def handleIncomingMessages(self, socket_connected, peer_sending_msg):
         while True:
-            msg = self.receiveMessage(connectedSocket)
+            msg = self.receiveMessage(socket_connected, peer_sending_msg)
             if msg is None:
+                print(f"Peer {self.peer.peer_id}: Connection closed by Peer {peer_sending_msg}")
                 break
-            # Process the message based on its type
-            if msg.msg_type == 0:
-                self.sendMessage(connectedSocket, Message(1, b'Acknowledged, choked message'))  # Example response
-            elif msg.msg_type == 1:
-                self.sendMessage(connectedSocket, Message(2, b'Acknowledged, unchoked message'))  # Example response
-            elif msg.msg_type == 2:
-                self.sendMessage(connectedSocket, Message(2, b'Acknowledged, interested message'))  # Example response
-            elif msg.msg_type == 3:
-                self.sendMessage(connectedSocket, Message(2, b'Acknowledged, not interested message'))  # Example response
-            elif msg.msg_type == 4:
-                self.sendMessage(connectedSocket, Message(2, b'Acknowledged, have message'))  # Example response
-            elif msg.msg_type == 5:
-                self.sendMessage(connectedSocket, Message(2, b'Acknowledged, bitfield message'))  # Example response
-            elif msg.msg_type == 6:
-                self.sendMessage(connectedSocket, Message(2, b'Acknowledged, request message'))  # Example response
-            elif msg.msg_type == 7:
-                self.sendMessage(connectedSocket, Message(2, b'Acknowledged, piece message'))  # Example response
+            # Message type logic
+            # Each message type needs logic implemented. If there a log file write then implement logic above.
+            if msg.msg_type == 0:  # Choke
+                with open("../log_peer_{}.log".format(self.peer.peer_id), "a") as log_file:
+                        log_file.write("{}: Peer {} is choked by Peer {}\n".format(datetime.datetime.now().strftime("%c"), self.peer.peer_id, peer_sending_msg))
+
+            elif msg.msg_type == 1:  # Unchoke
+                with open("../log_peer_{}.log".format(self.peer.peer_id), "a") as log_file:
+                        log_file.write("{}: Peer {} is unchoked by Peer {}\n".format(datetime.datetime.now().strftime("%c"), self.peer.peer_id, peer_sending_msg))
+
+            elif msg.msg_type == 2:  # Interested
+                with open("../log_peer_{}.log".format(self.peer.peer_id), "a") as log_file:
+                        log_file.write("{}: Peer {} received the 'interested' message from Peer {}\n".format(datetime.datetime.now().strftime("%c"), self.peer.peer_id, peer_sending_msg))
+
+            elif msg.msg_type == 3:  # Not Interested
+                with open("../log_peer_{}.log".format(self.peer.peer_id), "a") as log_file:
+                        log_file.write("{}: Peer {} received the 'uninterested' message from Peer {}\n".format(datetime.datetime.now().strftime("%c"), self.peer.peer_id, peer_sending_msg))
+
+            elif msg.msg_type == 4:  # Have
+                with open("../log_peer_{}.log".format(self.peer.peer_id), "a") as log_file:
+                        log_file.write("{}: Peer {} received the 'have' message from Peer {}\n".format(datetime.datetime.now().strftime("%c"), self.peer.peer_id, peer_sending_msg))
+            
+            elif msg.msg_type == 5:  # Bitfield
+                # Testing methodology of responding to bitfield messages
+                if msg.payload == b'\x00' and self.peer.has_file == 1:
+                    self.sendMessage(socket_connected, Message(2, b'Interested'), self.peer.peer_id)
+                    
+                if msg.payload == b'\xFF' and self.peer.has_file == 1:
+                    self.sendMessage(socket_connected, Message(3, b'Not Interested'), self.peer.peer_id)
+
+            elif msg.msg_type == 6:  # Request
+                print(f"Peer {self.peer.peer_id}: Handling Request message from Peer {peer_sending_msg}")
+
+            elif msg.msg_type == 7:  # Piece
+                print(f"Peer {self.peer.peer_id}: Handling Piece message from Peer {peer_sending_msg}")
+                
             else:
-                print(f"Peer {self.peerId}: Unknown message type {msg.msg_type}")
+                print(f"Peer {self.peer.peer_id}: Unknown message type {msg.msg_type} from Peer {peer_sending_msg}")

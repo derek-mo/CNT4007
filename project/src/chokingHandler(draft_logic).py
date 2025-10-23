@@ -13,6 +13,7 @@ class SimulatedNeigborPeer:
 class ChokingHandler:
     def __init__(self, neighbors, num_preferred_neighbors, unchoking_interval, optimistic_unchoking_interval):
         self.neighbors = neighbors
+        self.currently_unchoked = []
         self.num_preferred_neighbors = num_preferred_neighbors
         self.unchoking_interval = unchoking_interval #Each peer determines preferred neighbors every p seconds
         self.optimistic_unchoking_interval = optimistic_unchoking_interval #Each peer determines an optimistically
@@ -30,9 +31,6 @@ class ChokingHandler:
         self.time_of_creation = time.time()
 
     def select_preferred_neighbors(self):
-        #TODO: Currently we aren't selecting from only the previously unchoked + optimistic, but all neighbors
-        # need to modify this to only pick from people that were just unchoked in the last cycle
-
         pairs = [] #Stores all interested neighbors
         neighbors_to_unchoke = [] #Stores the id of peers selected to be unchoked
         choked_but_interested = [] #Stores the id of peers who are choked but interested
@@ -73,7 +71,6 @@ class ChokingHandler:
             pairs = sorted_pairs
 
         # Select those with highest rates of download
-        # TODO, tied rates should be broken randomly, i dont think current approach does this exactly
         for i in range(min(self.num_preferred_neighbors, len(pairs))):
             neighbors_to_unchoke.append(pairs[i][1])  # Grab the top peers up to the num preferred neighbors
 
@@ -120,6 +117,10 @@ class ChokingHandler:
                 #Pick out new ids to unchoke
                 new_unchoked_ids = self.select_preferred_neighbors()
 
+                # Next we want to log the change of ids (Loggin is not fully implemented but print for now)
+                print(f"{time.time() - self.time_of_creation}: "
+                      f"Peer TESTER has the preferred neighbors {self.unchoked_neighbors}.")
+
                 #TODO: Then it unchokes those
                 # preferred neighbors by sending ‘unchoke’ messages and it expects to receive ‘request’
                 # messages from them. If a preferred neighbor is already unchoked, then peer A does not
@@ -127,6 +128,15 @@ class ChokingHandler:
                 # selected as preferred neighbors at this time should be choked unless it is an optimistically
                 # unchoked neighbor. To choke those neighbors, peer A sends ‘choke’ messages to them
                 # and stop sending pieces.
+
+                # Next we want to log the chocking and unchoking that occurs (still just printing for now)
+                for peer in neighbors:
+                    if peer.peer_id in self.currently_unchoked and peer.peer_id not in self.unchoked_neighbors:
+                        print(f"{time.time() - self.time_of_creation}: "
+                              f"Peer {peer.peer_id} is chocked by TESTER.")
+                    if peer.peer_id not in self.currently_unchoked and peer.peer_id in self.unchoked_neighbors:
+                        print(f"{time.time() - self.time_of_creation}: "
+                              f"Peer {peer.peer_id} is unchoked by TESTER.")
 
                 #Update timestamp for next unchoking/choking
                 choke_time += self.unchoking_interval
@@ -136,8 +146,17 @@ class ChokingHandler:
                 # Pick out new id to optimistically unchoke
                 self.select_optimistically_unchoked()
 
+                # Next we want to log the change of ids (Loggin is not fully implemented but print for now)
+                print(f"{time.time() - self.time_of_creation}:"
+                      f"Peer TESTER has the optimistically unchoked neighbor {self.optimistically_unchoked_id}.")
+
                 #TODO: Then peer A sends ‘unchoke’ message to the selected neighbor and
                 # it expects to receive ‘request’ messages from it.
+
+                # Next we want to log the unchoking that occurs (still just printing for now)
+                if self.optimistically_unchoked_id not in self.currently_unchoked and self.optimistically_unchoked_id in self.unchoked_neighbors:
+                    print(f"{time.time() - self.time_of_creation}: "
+                          f"Peer {self.optimistically_unchoked_id} is unchoked by TESTER.")
 
                 # Update timestamp for next optimistic unchoking
                 optimistic_unchoke_time += self.optimistic_unchoking_interval
@@ -148,6 +167,9 @@ class ChokingHandler:
 
             #Intervals are kinda slow we dont want to clutter the console even during development
             time.sleep(2)
+
+            #Update our tracker of who was just currently unchoked in the previous cycle
+            self.currently_unchoked = self.unchoked_neighbors
 
 if __name__ == "__main__":
     # Create some fake neighbors to test logic

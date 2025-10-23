@@ -70,13 +70,13 @@ class PeerClass:
                     # Peer will send a bitfield message to other peer
                     if self.has_file == 0:
                         self.msgHandler.sendMessage(client_socket, Message(5, b'\x00'), otherPeerId)  # Example bitfield message
-
+                        msg = self.msgHandler.receiveMessage(client_socket, otherPeerId)  # Wait for bitfield response
+                        # Later peer will send interest message based on comparison of bitfields
+                        if msg.payload == b'\xff':
+                            self.msgHandler.sendMessage(client_socket, Message(2, b'Interested'), otherPeerId)
+                    
                     threading.Thread(target=self.msgHandler.handleIncomingMessages, args=(client_socket, otherPeerId)).start()
 
-                    # wait and see if server can still receive messages (THIS IS JUST FOR TESTING)
-                    time.sleep(5)
-                    self.msgHandler.sendMessage(client_socket, Message(2, b'Interested'), otherPeerId)
-                        
                 except Exception as e:
                     print("Peer {}: Failed to connect to peer {} at {}:{} - {}".format(self.peer_id, otherPeerId, otherPeerHost, otherPeerPort, e))
         

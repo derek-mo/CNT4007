@@ -59,10 +59,13 @@ class MessageHandler:
                         log_file.write("{}: Peer {} is choked by Peer {}\n".format(datetime.datetime.now().strftime("%c"), self.peer.peer_id, peer_sending_msg))
 
             elif msg.msg_type == 1:  # Unchoke
+                self.sendMessage(socket_connected, Message(6, b'Requesting piece'), peer_sending_msg) # Example for now
                 with open("../log_peer_{}.log".format(self.peer.peer_id), "a") as log_file:
                         log_file.write("{}: Peer {} is unchoked by Peer {}\n".format(datetime.datetime.now().strftime("%c"), self.peer.peer_id, peer_sending_msg))
 
             elif msg.msg_type == 2:  # Interested
+                # Would need interested logic here deciding whether or not to choke/unchoke
+                self.sendMessage(socket_connected, Message(1, b'Unchoking'), peer_sending_msg) # send unchoke message
                 with open("../log_peer_{}.log".format(self.peer.peer_id), "a") as log_file:
                         log_file.write("{}: Peer {} received the 'interested' message from Peer {}\n".format(datetime.datetime.now().strftime("%c"), self.peer.peer_id, peer_sending_msg))
 
@@ -75,12 +78,13 @@ class MessageHandler:
                         log_file.write("{}: Peer {} received the 'have' message from Peer {}\n".format(datetime.datetime.now().strftime("%c"), self.peer.peer_id, peer_sending_msg))
             
             elif msg.msg_type == 5:  # Bitfield
-                # Testing methodology of responding to bitfield messages
-                if msg.payload == b'\x00' and self.peer.has_file == 1:
-                    self.sendMessage(socket_connected, Message(2, b'Interested'), self.peer.peer_id)
-                    
-                if msg.payload == b'\xFF' and self.peer.has_file == 1:
-                    self.sendMessage(socket_connected, Message(3, b'Not Interested'), self.peer.peer_id)
+                # received bitfield message then send our bitfield back
+                # temporary logic until bitfield calculation is implemented
+                if self.peer.has_file == 0:
+                    self.sendMessage(socket_connected, Message(5, b'\x00'), peer_sending_msg)  # Example bitfield message
+                if self.peer.has_file == 1:
+                    self.sendMessage(socket_connected, Message(5, b'\xFF'), peer_sending_msg)  # Example bitfield message
+                
 
             elif msg.msg_type == 6:  # Request
                 print(f"Peer {self.peer.peer_id}: Handling Request message from Peer {peer_sending_msg}")

@@ -28,7 +28,7 @@ class BitfieldManager:
         return (self._bits[byte_index] >> bit_position) & 1 == 1
 
 
-    def set(self, index):
+    def set_bit(self, index):
         # Change a bit to have a bit
         byte_index = index // 8
         bit_position = 7 - (index % 8)

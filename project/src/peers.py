@@ -50,7 +50,6 @@ class PeerClass:
             #messaging
             threading.Thread(target=self.msgHandler.handleIncomingMessages, args=(client_socket, otherPeerId)).start()
             
-
     def connectToPeer(self):
         for otherPeerId, (otherPeerHost, otherPeerPort, otherPeerHasFile) in self.otherPeerInfo.items():
             if otherPeerId < self.peer_id:
@@ -101,8 +100,3 @@ class PeerClass:
             self.PeersConnections[receivedPeerId] = client_socket
         except Exception as e:
             print("Peer {}: Handshake failed - {}".format(self.peer_id, e))
-
-        
-
-
-    

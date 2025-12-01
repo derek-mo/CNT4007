@@ -1,4 +1,4 @@
-
+import datetime
 
 class Message:
     def __init__(self, msg_type, payload=b''):
@@ -22,7 +22,7 @@ class MessageHandler:
     def __init__(self, peer):
         self.peer = peer
 
-    def sendMessage(self, connectedSocket, msg):
+    def sendMessage(self, connectedSocket, msg, peer_receiving_msg):
         try:
             encoded_msg = msg.encode()
             connectedSocket.sendall(encoded_msg)
@@ -30,7 +30,7 @@ class MessageHandler:
         except Exception as e:
             print(f"Peer {self.peer.peer_id}: Error sending message - {e}")
     
-    def receiveMessage(self, connectedSocket):
+    def receiveMessage(self, connectedSocket, peer_sending_msg):
         try:
             length_bytes = connectedSocket.recv(4)
             if not length_bytes:
@@ -47,8 +47,9 @@ class MessageHandler:
         
     def handleIncomingMessages(self, connectedSocket, from_peer_id):
         while True:
-            msg = self.receiveMessage(connectedSocket)
+            msg = self.receiveMessage(connectedSocket, from_peer_id)
             if msg is None:
+                print(f"Peer {self.peer.peer_id}: Connection closed by Peer {from_peer_id}")
                 break
 
             print(f"Peer {self.peer.peer_id}: Handling message type {msg.msg_type} from Peer {from_peer_id}")

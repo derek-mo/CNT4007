@@ -38,8 +38,6 @@ class PeerClass:
 
         while True:
             client_socket, addr = server_socket.accept()
-            #threading.Thread(target=self.handleIncomingHandshake, args=(client_socket,)).start()
-            print("Peer {}: Connection established with {}".format(self.peer_id, addr))
             self.handleIncomingHandshake(client_socket)
 
             # Writing log TCP Connection Logic
@@ -87,6 +85,16 @@ class PeerClass:
                     # peer makes a TCP connection to other peer
                     with open("../log_peer_{}.log".format(self.peer_id), "a") as log_file:
                         log_file.write("{}: Peer {} makes a connection to Peer {}\n".format(datetime.datetime.now().strftime("%c"), self.peer_id, otherPeerId))
+
+                    # Peer will send a bitfield message to other peer
+                    if self.has_file == 0:
+                        self.msgHandler.sendMessage(client_socket, Message(5, b'\x00'), otherPeerId)  # Example bitfield message
+
+                    threading.Thread(target=self.msgHandler.handleIncomingMessages, args=(client_socket, otherPeerId)).start()
+
+                    # wait and see if server can still receive messages (THIS IS JUST FOR TESTING)
+                    time.sleep(5)
+                    self.msgHandler.sendMessage(client_socket, Message(2, b'Interested'), otherPeerId)
                         
                 except Exception as e:
                     print("Peer {}: Failed to connect to peer {} at {}:{} - {}".format(self.peer_id, otherPeerId, otherPeerHost, otherPeerPort, e))
@@ -109,11 +117,5 @@ class PeerClass:
             sendHandshake(client_socket, self.peer_id)
             print("Peer {}: Handshake response sent to peer {}".format(self.peer_id, receivedPeerId))
             self.PeersConnections[receivedPeerId] = client_socket
-            # Further communication logic would go here
         except Exception as e:
             print("Peer {}: Handshake failed - {}".format(self.peer_id, e))
-
-        
-
-
-    

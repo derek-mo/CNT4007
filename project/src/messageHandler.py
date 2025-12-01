@@ -19,16 +19,16 @@ class Message:
         return Message(msg_type, payload)
     
 class MessageHandler:
-    def __init__(self, peerId):
-        self.peerId = peerId
+    def __init__(self, peer):
+        self.peer = peer
 
     def sendMessage(self, connectedSocket, msg):
         try:
             encoded_msg = msg.encode()
             connectedSocket.sendall(encoded_msg)
-            print(f"Peer {self.peerId}: Sent message type {msg.msg_type} with payload: {msg.payload}")
+            print(f"Peer {self.peer.peer_id}: Sent message type {msg.msg_type} with payload: {msg.payload}")
         except Exception as e:
-            print(f"Peer {self.peerId}: Error sending message - {e}")
+            print(f"Peer {self.peer.peer_id}: Error sending message - {e}")
     
     def receiveMessage(self, connectedSocket):
         try:
@@ -39,17 +39,19 @@ class MessageHandler:
             msg_type_byte = connectedSocket.recv(1)
             payload = connectedSocket.recv(length - 1)  # -1 for the message type byte
             msg = Message.decode(length_bytes + msg_type_byte + payload)
-            print(f"Peer {self.peerId}: Received message type {msg.msg_type} with payload: {msg.payload}")
+            print(f"Peer {self.peer.peer_id}: Received message type {msg.msg_type} with payload: {msg.payload}")
             return msg
         except Exception as e:
-            print(f"Peer {self.peerId}: Error receiving message - {e}")
+            print(f"Peer {self.peer.peer_id}: Error receiving message - {e}")
             return None
         
-    def handleIncomingMessages(self, connectedSocket):
+    def handleIncomingMessages(self, connectedSocket, from_peer_id):
         while True:
             msg = self.receiveMessage(connectedSocket)
             if msg is None:
                 break
+
+            print(f"Peer {self.peer.peer_id}: Handling message type {msg.msg_type} from Peer {from_peer_id}")
             # Process the message based on its type
             if msg.msg_type == 0:
                 self.sendMessage(connectedSocket, Message(1, b'Acknowledged, choked message'))  # Example response
@@ -62,10 +64,18 @@ class MessageHandler:
             elif msg.msg_type == 4:
                 self.sendMessage(connectedSocket, Message(2, b'Acknowledged, have message'))  # Example response
             elif msg.msg_type == 5:
-                self.sendMessage(connectedSocket, Message(2, b'Acknowledged, bitfield message'))  # Example response
+                #self.sendMessage(connectedSocket, Message(2, b'Acknowledged, bitfield message'))  # Example response
+                if msg.payload == b'\xFF':
+                    print(f"Peer {self.peer.peer_id}: Peer {from_peer_id} has full file.")
+                elif msg.payload == b'\x00':
+                    print(f"Peer {self.peer.peer_id}: Peer {from_peer_id} has empty file.")
+                    # respond with own bitfield if I have file
+                if hasattr(self, "peer") and self.peer.has_file == 1:
+                    self.sendMessage(connectedSocket, Message(5, b'\xFF'))
             elif msg.msg_type == 6:
                 self.sendMessage(connectedSocket, Message(2, b'Acknowledged, request message'))  # Example response
             elif msg.msg_type == 7:
                 self.sendMessage(connectedSocket, Message(2, b'Acknowledged, piece message'))  # Example response
             else:
-                print(f"Peer {self.peerId}: Unknown message type {msg.msg_type}")
+                print(f"Peer {self.peer.peer_id}: Unknown message type {msg.msg_type}")
+    

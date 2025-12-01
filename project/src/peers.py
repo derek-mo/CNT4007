@@ -21,19 +21,13 @@ def receiveHandshake(client_socket):
     return peerId
 
 class PeerClass:
-    def __init__(self, peer_id, host, port, has_file, otherPeerInfo, NumberOfPreferredNeighbors, UnchokingInterval, OptimisticUnchokingInterval, FileName, FileSize, PieceSize):
+    def __init__(self, peer_id, host, port, has_file, otherPeerInfo):
         self.peer_id = peer_id
         self.host = host
         self.port = port
         self.has_file = has_file
         self.otherPeerInfo = otherPeerInfo
         self.PeersConnections = {}
-        self.NumberOfPreferredNeighbors = NumberOfPreferredNeighbors
-        self.UnchokingInterval = UnchokingInterval
-        self.OptimisticUnchokingInterval = OptimisticUnchokingInterval
-        self.FileName = FileName
-        self.FileSize = FileSize
-        self.PieceSize = PieceSize
 
     def createServerSocket(self):
         server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -48,37 +42,46 @@ class PeerClass:
             print("Peer {}: Connection established with {}".format(self.peer_id, addr))
             self.handleIncomingHandshake(client_socket)
 
-            messageReceiver = MessageHandler(self.peer_id)
-            threading.Thread(target=messageReceiver.handleIncomingMessages, args=(client_socket,)).start()
-            # Writing log logic
+            # Writing log TCP Connection Logic
             # peer accepts a TCP connection from other peer (peer is connected from peer))
             otherPeerId = next((pid for pid, socket in self.PeersConnections.items() if socket == client_socket), None)
             with open("../log_peer_{}.log".format(self.peer_id), "a") as log_file:
                 log_file.write("{}: Peer {} is connected from Peer {}\n".format(datetime.datetime.now().strftime("%c"), self.peer_id, otherPeerId)) # need access to other peer id
+
+            messageReceiver = MessageHandler(self)
+            threading.Thread(target=messageReceiver.handleIncomingMessages, args=(client_socket,)).start()
+            # Who is the peer sending the message?
+            print("Peer {}: Ready to receive messages from Peer {}".format(self.peer_id, otherPeerId))
             
 
     def connectToPeer(self):
         for otherPeerId, (otherPeerHost, otherPeerPort, otherPeerHasFile) in self.otherPeerInfo.items():
             if otherPeerId < self.peer_id:
                 try:
+                    # TCP Connection
                     print("Peer {}: Attempting to connect to peer {} at {}:{}".format(self.peer_id, otherPeerId, otherPeerHost, otherPeerPort))
                     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                     client_socket.connect((otherPeerHost, otherPeerPort))
+                    # Handshake
                     sendHandshake(client_socket, self.peer_id)
                     receivedPeerId = receiveHandshake(client_socket)
                     print("Peer {}: Handshake successful with peer {}".format(self.peer_id, receivedPeerId))
+                    # Store the connection
                     self.PeersConnections[receivedPeerId] = client_socket
 
                     # Further communication logic would go here
 
-                    # Peer will send a bitfield message to other peer
-                    messenger = MessageHandler(self.peer_id)
-                    messenger.sendMessage(client_socket, Message(5, b'Bitfield data here'))  # Example bitfield message
-                    messenger.receiveMessage(client_socket)
-                    # wait and see if server can still receive messages
-                    time.sleep(5)
-                    messenger.sendMessage(client_socket, Message(3, b'Requesting piece 1'))  # Example request message
-                    messenger.receiveMessage(client_socket)
+                    # Peer will send a bitfield message to other peer directly after handshake is confirmed
+                    messenger = MessageHandler(self)
+                    # FOR NOW assume the file is made up of 8 pieces
+                    if self.has_file == 1: # if the connecting peer has the file send full bitfield
+                        print("Peer {}: Sending bitfield message to Peer {}".format(self.peer_id, otherPeerId))
+                        messenger.sendMessage(client_socket, Message(5, b'\xFF'))
+                    else: # if the connecting peer does not have the file send empty bitfield
+                        print("Peer {}: Sending bitfield message to Peer {}".format(self.peer_id, otherPeerId))
+                        messenger.sendMessage(client_socket, Message(5, b'\x00'))  # Example bitfield message
+
+                    threading.Thread(target=messenger.handleIncomingMessages, args=(client_socket,)).start()
 
                     # Writing log logic
                     # peer makes a TCP connection to other peer

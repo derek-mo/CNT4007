@@ -101,8 +101,3 @@ class PeerClass:
             self.PeersConnections[receivedPeerId] = client_socket
         except Exception as e:
             print("Peer {}: Handshake failed - {}".format(self.peer_id, e))
-
-        
-
-
-    

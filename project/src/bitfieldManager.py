@@ -1,7 +1,6 @@
 import math
 from pathlib import Path
 
-
 class BitfieldManager:
   def __init__(self, total_size, piece_size, peer_dir, has_complete):
       self.total_size = total_size
@@ -19,7 +18,7 @@ class BitfieldManager:
 
   # Returns true if the bit is a 1
   def has(self, index):
-      self._check_index(index)
+      self.check_index(index)
       byte_index = index // 8
       bit_position = 7 - (index % 8)
 
@@ -47,22 +46,34 @@ class BitfieldManager:
               missing.append(i)
 
       return missing
+  
+  def check_index(self, index):
+    if index < 0 or index >= self.num_pieces:
+        raise IndexError(f"Piece index {index} out of range 0..{self.num_pieces - 1}")
 
   # Convert bitfield to bytes for TCP
   def to_bytes(self):
       return bytes(self.bits)
 
   # Convert given bitfield information that is in bytes to bits
-  def from_bytes():
-      pass
+  def from_bytes(self, data):
+      if not isinstance(data, (bytes, bytearray)):
+          raise TypeError("data must be bytes or bytearray")
 
-  def _set_bit(self, index):
-      self._check_index(index)
+      expected_len = (self.num_pieces + 7) // 8
+      if len(data) != expected_len:
+          raise ValueError(f"Expected {expected_len} bytes, got {len(data)}")
+
+      self.bits = bytearray(data)
+      self.cleanup_spare_bits()
+
+  def set_bit(self, index):
+      self.check_index(index)
       byte_index = index // 8
       bit_position = 7 - (index % 8)
       self.bits[byte_index] |= (1 << bit_position)
 
-  def _cleanup_spare_bits(self):
+  def cleanup_spare_bits(self):
       # Final bits should be 0
       spare_bits = (8 - (self.num_pieces % 8)) % 8
       if spare_bits and len(self.bits) > 0:

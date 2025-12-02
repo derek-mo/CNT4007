@@ -2,7 +2,11 @@ import socket
 import threading
 import time
 import datetime
+import os
+from pathlib import Path
+import shutil
 from messageHandler import MessageHandler, Message
+from bitfieldManager import BitfieldManager
 
 def sendHandshake(client_socket, peerId):
     header = b"P2PFILESHARINGPROJ"
@@ -21,7 +25,8 @@ def receiveHandshake(client_socket):
     return peerId
 
 class PeerClass:
-    def __init__(self, peer_id, host, port, has_file, otherPeerInfo):
+    def __init__(self, peer_id, host, port, has_file, otherPeerInfo, file_name, file_size, piece_size):
+
         self.peer_id = peer_id
         self.host = host
         self.port = port
@@ -29,6 +34,20 @@ class PeerClass:
         self.otherPeerInfo = otherPeerInfo
         self.PeersConnections = {}
         self.msgHandler = MessageHandler(self)
+        self.peer_dir = f"../peer_{self.peer_id}"
+        os.makedirs(self.peer_dir, exist_ok=True)
+        if has_file == 1:
+            # locate repository root robustly and copy `thefile` into the peer directory
+            src_file = Path(__file__).resolve().parents[2] / file_name
+            dest_file = Path(self.peer_dir) / file_name
+            try:
+                shutil.copyfile(src_file, dest_file)
+                print(f"Peer {self.peer_id}: copied {src_file} -> {dest_file}")
+            except FileNotFoundError:
+                print(f"Peer {self.peer_id}: source file not found at {src_file}")
+            except Exception as e:
+                print(f"Peer {self.peer_id}: failed to copy file - {e}")
+                self.bitfield = BitfieldManager(total_size=file_size, piece_size=piece_size, peer_dir=self.peer_dir, has_complete=(has_file == 1))
 
     def createServerSocket(self):
         server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -70,7 +89,10 @@ class PeerClass:
 
                     # Peer will send a bitfield message to other peer
                     if self.has_file == 0:
-                        self.msgHandler.sendMessage(client_socket, Message(5, b'\x00'), otherPeerId)  # Example bitfield message
+                        # self.msgHandler.sendMessage(client_socket, Message(5, b'\x00'), otherPeerId)  # Example bitfield message
+                        bitfield_bytes = self.bitfield.to_bytes()
+                        self.msgHandler.sendMessage(client_socket, Message(5, bitfield_bytes), otherPeerId)
+
 
                     threading.Thread(target=self.msgHandler.handleIncomingMessages, args=(client_socket, otherPeerId)).start()
 

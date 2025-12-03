@@ -252,16 +252,19 @@ class PeerClass:
         
         offset = piece_index * self.bitfield.piece_size
         
-        # Create/open file in read-write binary mode
-        with open(file_path, 'r+b' if file_path.exists() else 'wb') as f:
-            # Ensure file is large enough
+        # Create/open file in read-write binary mode. Use 'w+b' to create if missing.
+        mode = 'r+b' if file_path.exists() else 'w+b'
+        with open(file_path, mode) as f:
+            # Ensure file is large enough to hold this piece (grow only as much as needed)
             f.seek(0, 2)  # Seek to end
             current_size = f.tell()
-            if current_size < self.bitfield.total_size:
-                f.seek(self.bitfield.total_size - 1)
+            needed_size = offset + len(data)
+            if current_size < needed_size:
+                # Expand file only to the end of this piece, avoid filling entire file with NULLs
+                f.seek(needed_size - 1)
                 f.write(b'\0')
-            
-            # Write the piece
+
+            # Write the piece at the correct offset
             f.seek(offset)
             f.write(data)
     

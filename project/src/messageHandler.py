@@ -272,6 +272,14 @@ class MessageHandler:
                 try:
                     self.peer.writePiece(piece_index, piece_data)
                     self.peer.bitfield.mark_have(piece_index)
+                    # Try assembling the final file if we now have all pieces
+                    try:
+                        assembled = self.peer.assemble_file()
+                        if assembled:
+                            with open(f"../log_peer_{self.peer.peer_id}.log", "a") as log_file:
+                                log_file.write(f"{datetime.datetime.now().strftime('%c')}: Peer {self.peer.peer_id} assembled the complete file from pieces.\n")
+                    except Exception:
+                        pass
                     # print(f"Peer {self.peer.peer_id}: Successfully saved piece {piece_index}")
                     
                     # Log download completion for this piece

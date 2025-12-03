@@ -57,6 +57,8 @@ class PeerClass:
                 pass
         
         self.bitfield = BitfieldManager(total_size=file_size, piece_size=piece_size, peer_dir=self.peer_dir, has_complete=(has_file == 1))
+        # remember configured file name for read/write
+        self.file_name = file_name
         
         # Initialize choking handler
         self.choking_handler = ChokingHandler(
@@ -128,7 +130,8 @@ class PeerClass:
             'bytes_received': 0,
             'last_rate_calc': time.time(),
             'bitfield': None,  # Store their bitfield
-            'pending_requests': set()  # Track piece indices we've requested from this peer
+            'pending_requests': set(),  # Track piece indices we've requested from this peer
+            'we_interested': False  # whether *we* have sent INTERESTED to this neighbor
         }
         # print(f"Peer {self.peer_id}: Initialized neighbor state for Peer {peer_id} (choked=True, interested=False)")
     
@@ -204,7 +207,7 @@ class PeerClass:
             return f.read(piece_size)
     
     def writePiece(self, piece_index, data):
-        file_path = Path(self.peer_dir) / 'thefile'  # Default filename
+        file_path = Path(self.peer_dir) / self.file_name  # Use configured filename
         
         offset = piece_index * self.bitfield.piece_size
         

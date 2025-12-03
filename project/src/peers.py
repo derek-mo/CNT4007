@@ -168,12 +168,6 @@ class PeerClass:
         return [peer_id for peer_id, state in self.neighbor_states.items() if state['interested']]
 
     def check_all_peers_complete(self):
-        """
-        Returns True iff:
-          - we have all pieces, AND
-          - for every other peer we know about, we have a full bitfield
-            and they also have all pieces.
-        """
         # We must have the complete file
         if self.bitfield.missing():
             return False

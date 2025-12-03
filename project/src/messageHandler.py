@@ -87,7 +87,7 @@ class MessageHandler:
         
         
     def handleIncomingMessages(self, socket_connected, peer_sending_msg):
-        while True:
+        while not self.peer.shutdown_event.is_set():
             msg = self.receiveMessage(socket_connected, peer_sending_msg)
             if msg is None:
                 # print(f"Peer {self.peer.peer_id}: Connection closed by Peer {peer_sending_msg}")
@@ -128,7 +128,7 @@ class MessageHandler:
                 # Update neighbor state to mark them as not interested
                 if peer_sending_msg in self.peer.neighbor_states:
                     self.peer.neighbor_states[peer_sending_msg]['interested'] = False
-                    # print(f"Peer {self.peer.peer_id}: Peer {peer_sending_msg} is now NOT INTERESTED")
+                    print(f"Peer {self.peer.peer_id}: Peer {peer_sending_msg} is now NOT INTERESTED")
                 
                 with open("../log_peer_{}.log".format(self.peer.peer_id), "a") as log_file:
                         log_file.write("{}: Peer {} received the 'not interested' message from Peer {}\n".format(datetime.datetime.now().strftime("%c"), self.peer.peer_id, peer_sending_msg))
@@ -210,6 +210,7 @@ class MessageHandler:
                         if peer_sending_msg in self.peer.neighbor_states:
                             self.peer.neighbor_states[peer_sending_msg]['we_interested'] = True
                     else:
+                        # print(f"Peer {self.peer.peer_id}: Peer {peer_sending_msg} has no pieces we need - sending NOT INTERESTED")
                         self.sendMessage(socket_connected, Message(3, b''), peer_sending_msg)
                         if peer_sending_msg in self.peer.neighbor_states:
                             self.peer.neighbor_states[peer_sending_msg]['we_interested'] = False
@@ -284,17 +285,40 @@ class MessageHandler:
                     for other_peer_id, other_socket in self.peer.PeersConnections.items():
                         if other_peer_id != peer_sending_msg:
                             self.sendMessage(other_socket, Message(4, have_payload), other_peer_id)
-                    # After notifying others, re-evaluate interest across neighbors
-                    try:
-                        self.reevaluate_interest_for_all()
-                    except Exception:
-                        pass
+                    
+                    # Re-evaluate interest in all neighbors (per spec: "checks the bitfields of its neighbors")
+                    our_missing = self.peer.bitfield.missing()
+                    for neighbor_peer_id, neighbor_state in self.peer.neighbor_states.items():
+                        neighbor_bitfield = neighbor_state.get('bitfield')
+                        if neighbor_bitfield is not None:
+                            # Check if this neighbor still has anything we need
+                            they_have_any = any(neighbor_bitfield.has(i) for i in our_missing)
+                            
+                            # If they no longer have anything interesting and we were previously interested
+                            if not they_have_any and neighbor_state.get('interested', False):
+                                neighbor_socket = self.peer.PeersConnections.get(neighbor_peer_id)
+                                if neighbor_socket:
+                                    self.sendMessage(neighbor_socket, Message(3, b''), neighbor_peer_id)
+                                    print(f"Peer {self.peer.peer_id}: Sending 'Not Interested' to Peer {peer_sending_msg}")
+                                    neighbor_state['interested'] = False
 
+                    
                     # Check if download is complete
                     if not self.peer.bitfield.missing():
                         # print(f"Peer {self.peer.peer_id}: Download complete!")
                         with open(f"../log_peer_{self.peer.peer_id}.log", "a") as log_file:
                             log_file.write(f"{datetime.datetime.now().strftime('%c')}: Peer {self.peer.peer_id} has downloaded the complete file.\n")
+                        
+                        # Send 'not interested' to ALL neighbors since we don't need anything anymore
+                        for neighbor_peer_id, neighbor_state in self.peer.neighbor_states.items():
+                            neighbor_socket = self.peer.PeersConnections.get(neighbor_peer_id)
+                            if neighbor_socket:
+                                self.sendMessage(neighbor_socket, Message(3, b''), neighbor_peer_id)
+                        
+                        # See if the entire swarm is done now
+                        if self.peer.check_all_peers_complete():
+                            self.peer.shutdown_event.set()
+                                
                     else:
                         # Request another piece from the same peer if available
                         pass

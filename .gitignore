@@ -1,3 +1,4 @@
 *.log
 **/*peer*
 **/__pycache__
+*.pdf*

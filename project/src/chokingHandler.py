@@ -115,7 +115,7 @@ class ChokingHandler:
         next_preferred_time = self.start_time + self.unchoking_interval
         next_optimistic_time = self.start_time + self.optimistic_unchoking_interval
         
-        while True:
+        while not self.peer.shutdown_event.is_set():
             current_time = time.time()
             
             # Check if it's time to select preferred neighbors

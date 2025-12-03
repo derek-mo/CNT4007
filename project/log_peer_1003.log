@@ -1,3 +1,344 @@
-Wed Oct 22 12:07:16 2025: Peer 1003 makes a connection to Peer 1001
-Wed Oct 22 12:07:16 2025: Peer 1003 makes a connection to Peer 1002
-Wed Oct 22 12:07:41 2025: Peer 1003 is connected from Peer 1006
+Tue Dec  2 23:14:18 2025: Peer 1003 makes a connection to Peer 1001
+Tue Dec  2 23:14:18 2025: Peer 1003 received the 'uninterested' message from Peer 1001
+Tue Dec  2 23:14:18 2025: Peer 1003 makes a connection to Peer 1002
+Tue Dec  2 23:14:18 2025: Peer 1003 received the 'uninterested' message from Peer 1002
+Tue Dec  2 23:14:20 2025: Peer 1003 is unchoked by Peer 1001
+Tue Dec  2 23:14:20 2025: Peer 1003 has downloaded the piece 34 from Peer 1001. Now the number of pieces it has is 1.
+Tue Dec  2 23:14:20 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:20 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 17.
+Tue Dec  2 23:14:20 2025: Peer 1003 has downloaded the piece 82 from Peer 1001. Now the number of pieces it has is 2.
+Tue Dec  2 23:14:20 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:20 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 72.
+Tue Dec  2 23:14:20 2025: Peer 1003 has downloaded the piece 66 from Peer 1001. Now the number of pieces it has is 3.
+Tue Dec  2 23:14:20 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:20 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 83.
+Tue Dec  2 23:14:20 2025: Peer 1003 has downloaded the piece 122 from Peer 1001. Now the number of pieces it has is 4.
+Tue Dec  2 23:14:20 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:20 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 114.
+Tue Dec  2 23:14:20 2025: Peer 1003 has downloaded the piece 89 from Peer 1001. Now the number of pieces it has is 5.
+Tue Dec  2 23:14:20 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:20 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 36.
+Tue Dec  2 23:14:20 2025: Peer 1003 has downloaded the piece 43 from Peer 1001. Now the number of pieces it has is 6.
+Tue Dec  2 23:14:20 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:20 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 89.
+Tue Dec  2 23:14:20 2025: Peer 1003 has downloaded the piece 24 from Peer 1001. Now the number of pieces it has is 7.
+Tue Dec  2 23:14:20 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 110.
+Tue Dec  2 23:14:20 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:20 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 40.
+Tue Dec  2 23:14:20 2025: Peer 1003 has downloaded the piece 119 from Peer 1001. Now the number of pieces it has is 8.
+Tue Dec  2 23:14:20 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:20 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 16.
+Tue Dec  2 23:14:20 2025: Peer 1003 has downloaded the piece 90 from Peer 1001. Now the number of pieces it has is 9.
+Tue Dec  2 23:14:20 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:20 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 100.
+Tue Dec  2 23:14:20 2025: Peer 1003 has downloaded the piece 105 from Peer 1001. Now the number of pieces it has is 10.
+Tue Dec  2 23:14:20 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:20 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 47.
+Tue Dec  2 23:14:20 2025: Peer 1003 has downloaded the piece 53 from Peer 1001. Now the number of pieces it has is 11.
+Tue Dec  2 23:14:20 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:20 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 86.
+Tue Dec  2 23:14:20 2025: Peer 1003 has downloaded the piece 92 from Peer 1001. Now the number of pieces it has is 12.
+Tue Dec  2 23:14:20 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:20 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 12.
+Tue Dec  2 23:14:21 2025: Peer 1003 has downloaded the piece 68 from Peer 1001. Now the number of pieces it has is 13.
+Tue Dec  2 23:14:21 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:21 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 119.
+Tue Dec  2 23:14:21 2025: Peer 1003 has downloaded the piece 42 from Peer 1001. Now the number of pieces it has is 14.
+Tue Dec  2 23:14:21 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:21 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 57.
+Tue Dec  2 23:14:21 2025: Peer 1003 has downloaded the piece 54 from Peer 1001. Now the number of pieces it has is 15.
+Tue Dec  2 23:14:21 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:21 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 132.
+Tue Dec  2 23:14:21 2025: Peer 1003 has downloaded the piece 15 from Peer 1001. Now the number of pieces it has is 16.
+Tue Dec  2 23:14:21 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:21 2025: Peer 1003 is unchoked by Peer 1002
+Tue Dec  2 23:14:21 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 13.
+Tue Dec  2 23:14:21 2025: Peer 1003 has downloaded the piece 67 from Peer 1001. Now the number of pieces it has is 17.
+Tue Dec  2 23:14:21 2025: Peer 1003 has downloaded the piece 17 from Peer 1002. Now the number of pieces it has is 19.
+Tue Dec  2 23:14:21 2025: Peer 1003 has downloaded the piece 52 from Peer 1001. Now the number of pieces it has is 19.
+Tue Dec  2 23:14:21 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 62.
+Tue Dec  2 23:14:21 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:21 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:21 2025: Peer 1003 has downloaded the piece 80 from Peer 1001. Now the number of pieces it has is 20.
+Tue Dec  2 23:14:21 2025: Peer 1003 has downloaded the piece 132 from Peer 1002. Now the number of pieces it has is 21.
+Tue Dec  2 23:14:21 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 76.
+Tue Dec  2 23:14:21 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:21 2025: Peer 1003 has downloaded the piece 57 from Peer 1002. Now the number of pieces it has is 23.
+Tue Dec  2 23:14:21 2025: Peer 1003 has downloaded the piece 61 from Peer 1001. Now the number of pieces it has is 23.
+Tue Dec  2 23:14:21 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 75.
+Tue Dec  2 23:14:21 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:21 2025: Peer 1003 has downloaded the piece 26 from Peer 1001. Now the number of pieces it has is 25.
+Tue Dec  2 23:14:21 2025: Peer 1003 has downloaded the piece 16 from Peer 1002. Now the number of pieces it has is 25.
+Tue Dec  2 23:14:21 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 127.
+Tue Dec  2 23:14:21 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 111.
+Tue Dec  2 23:14:21 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:21 2025: Peer 1003 has downloaded the piece 86 from Peer 1001. Now the number of pieces it has is 26.
+Tue Dec  2 23:14:21 2025: Peer 1003 has downloaded the piece 27 from Peer 1001. Now the number of pieces it has is 28.
+Tue Dec  2 23:14:21 2025: Peer 1003 has downloaded the piece 72 from Peer 1002. Now the number of pieces it has is 28.
+Tue Dec  2 23:14:21 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 58.
+Tue Dec  2 23:14:21 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:21 2025: Peer 1003 has downloaded the piece 47 from Peer 1002. Now the number of pieces it has is 29.
+Tue Dec  2 23:14:21 2025: Peer 1003 has downloaded the piece 103 from Peer 1001. Now the number of pieces it has is 30.
+Tue Dec  2 23:14:21 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 3.
+Tue Dec  2 23:14:21 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:21 2025: Peer 1003 has downloaded the piece 7 from Peer 1001. Now the number of pieces it has is 31.
+Tue Dec  2 23:14:21 2025: Peer 1003 has downloaded the piece 127 from Peer 1002. Now the number of pieces it has is 32.
+Tue Dec  2 23:14:21 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 125.
+Tue Dec  2 23:14:21 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:21 2025: Peer 1003 has downloaded the piece 56 from Peer 1001. Now the number of pieces it has is 33.
+Tue Dec  2 23:14:21 2025: Peer 1003 has downloaded the piece 62 from Peer 1002. Now the number of pieces it has is 34.
+Tue Dec  2 23:14:21 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 49.
+Tue Dec  2 23:14:21 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:21 2025: Peer 1003 has downloaded the piece 75 from Peer 1002. Now the number of pieces it has is 35.
+Tue Dec  2 23:14:21 2025: Peer 1003 has downloaded the piece 23 from Peer 1001. Now the number of pieces it has is 36.
+Tue Dec  2 23:14:21 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 11.
+Tue Dec  2 23:14:21 2025: Peer 1003 has downloaded the piece 129 from Peer 1001. Now the number of pieces it has is 37.
+Tue Dec  2 23:14:21 2025: Peer 1003 has downloaded the piece 58 from Peer 1002. Now the number of pieces it has is 38.
+Tue Dec  2 23:14:21 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 105.
+Tue Dec  2 23:14:21 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:21 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:21 2025: Peer 1003 has downloaded the piece 83 from Peer 1002. Now the number of pieces it has is 40.
+Tue Dec  2 23:14:21 2025: Peer 1003 has downloaded the piece 97 from Peer 1001. Now the number of pieces it has is 40.
+Tue Dec  2 23:14:21 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 67.
+Tue Dec  2 23:14:21 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:21 2025: Peer 1003 has downloaded the piece 73 from Peer 1001. Now the number of pieces it has is 41.
+Tue Dec  2 23:14:21 2025: Peer 1003 has downloaded the piece 49 from Peer 1002. Now the number of pieces it has is 43.
+Tue Dec  2 23:14:21 2025: Peer 1003 has downloaded the piece 36 from Peer 1001. Now the number of pieces it has is 43.
+Tue Dec  2 23:14:21 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 63.
+Tue Dec  2 23:14:21 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:21 2025: Peer 1003 has downloaded the piece 98 from Peer 1001. Now the number of pieces it has is 45.
+Tue Dec  2 23:14:21 2025: Peer 1003 has downloaded the piece 76 from Peer 1002. Now the number of pieces it has is 45.
+Tue Dec  2 23:14:21 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 45.
+Tue Dec  2 23:14:21 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:21 2025: Peer 1003 has downloaded the piece 12 from Peer 1002. Now the number of pieces it has is 47.
+Tue Dec  2 23:14:21 2025: Peer 1003 has downloaded the piece 115 from Peer 1001. Now the number of pieces it has is 47.
+Tue Dec  2 23:14:21 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 50.
+Tue Dec  2 23:14:21 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:22 2025: Peer 1003 has downloaded the piece 111 from Peer 1002. Now the number of pieces it has is 49.
+Tue Dec  2 23:14:22 2025: Peer 1003 has downloaded the piece 88 from Peer 1001. Now the number of pieces it has is 49.
+Tue Dec  2 23:14:22 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 120.
+Tue Dec  2 23:14:22 2025: Peer 1003 has downloaded the piece 65 from Peer 1001. Now the number of pieces it has is 50.
+Tue Dec  2 23:14:22 2025: Peer 1003 has downloaded the piece 114 from Peer 1002. Now the number of pieces it has is 51.
+Tue Dec  2 23:14:22 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 23.
+Tue Dec  2 23:14:22 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:22 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:22 2025: Peer 1003 has downloaded the piece 45 from Peer 1002. Now the number of pieces it has is 53.
+Tue Dec  2 23:14:22 2025: Peer 1003 has downloaded the piece 14 from Peer 1001. Now the number of pieces it has is 53.
+Tue Dec  2 23:14:22 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 82.
+Tue Dec  2 23:14:22 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:22 2025: Peer 1003 has downloaded the piece 125 from Peer 1002. Now the number of pieces it has is 55.
+Tue Dec  2 23:14:22 2025: Peer 1003 has downloaded the piece 29 from Peer 1001. Now the number of pieces it has is 55.
+Tue Dec  2 23:14:22 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 48.
+Tue Dec  2 23:14:22 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:22 2025: Peer 1003 has downloaded the piece 63 from Peer 1002. Now the number of pieces it has is 57.
+Tue Dec  2 23:14:22 2025: Peer 1003 has downloaded the piece 117 from Peer 1001. Now the number of pieces it has is 57.
+Tue Dec  2 23:14:22 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 70.
+Tue Dec  2 23:14:22 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:22 2025: Peer 1003 has downloaded the piece 11 from Peer 1002. Now the number of pieces it has is 58.
+Tue Dec  2 23:14:22 2025: Peer 1003 has downloaded the piece 99 from Peer 1001. Now the number of pieces it has is 59.
+Tue Dec  2 23:14:22 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 2.
+Tue Dec  2 23:14:22 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:22 2025: Peer 1003 has downloaded the piece 100 from Peer 1002. Now the number of pieces it has is 61.
+Tue Dec  2 23:14:22 2025: Peer 1003 has downloaded the piece 28 from Peer 1001. Now the number of pieces it has is 61.
+Tue Dec  2 23:14:22 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 25.
+Tue Dec  2 23:14:22 2025: Peer 1003 has downloaded the piece 3 from Peer 1002. Now the number of pieces it has is 63.
+Tue Dec  2 23:14:22 2025: Peer 1003 has downloaded the piece 37 from Peer 1001. Now the number of pieces it has is 63.
+Tue Dec  2 23:14:22 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 59.
+Tue Dec  2 23:14:22 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:22 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:22 2025: Peer 1003 has downloaded the piece 77 from Peer 1001. Now the number of pieces it has is 65.
+Tue Dec  2 23:14:22 2025: Peer 1003 has downloaded the piece 110 from Peer 1002. Now the number of pieces it has is 65.
+Tue Dec  2 23:14:22 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 15.
+Tue Dec  2 23:14:22 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:22 2025: Peer 1003 has downloaded the piece 30 from Peer 1001. Now the number of pieces it has is 67.
+Tue Dec  2 23:14:22 2025: Peer 1003 has downloaded the piece 40 from Peer 1002. Now the number of pieces it has is 67.
+Tue Dec  2 23:14:22 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 98.
+Tue Dec  2 23:14:22 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:22 2025: Peer 1003 has downloaded the piece 64 from Peer 1001. Now the number of pieces it has is 68.
+Tue Dec  2 23:14:22 2025: Peer 1003 has downloaded the piece 25 from Peer 1002. Now the number of pieces it has is 69.
+Tue Dec  2 23:14:22 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 85.
+Tue Dec  2 23:14:22 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:22 2025: Peer 1003 has the preferred neighbors 1002.
+Tue Dec  2 23:14:22 2025: Peer 1003 has downloaded the piece 2 from Peer 1001. Now the number of pieces it has is 70.
+Tue Dec  2 23:14:22 2025: Peer 1003 has downloaded the piece 70 from Peer 1002. Now the number of pieces it has is 71.
+Tue Dec  2 23:14:22 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 69.
+Tue Dec  2 23:14:22 2025: Peer 1003 has downloaded the piece 6 from Peer 1001. Now the number of pieces it has is 72.
+Tue Dec  2 23:14:22 2025: Peer 1003 has downloaded the piece 120 from Peer 1002. Now the number of pieces it has is 74.
+Tue Dec  2 23:14:22 2025: Peer 1003 has downloaded the piece 41 from Peer 1001. Now the number of pieces it has is 74.
+Tue Dec  2 23:14:22 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 101.
+Tue Dec  2 23:14:22 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 44.
+Tue Dec  2 23:14:22 2025: Peer 1003 has downloaded the piece 31 from Peer 1001. Now the number of pieces it has is 75.
+Tue Dec  2 23:14:22 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:22 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:22 2025: Peer 1003 has downloaded the piece 104 from Peer 1001. Now the number of pieces it has is 77.
+Tue Dec  2 23:14:22 2025: Peer 1003 has downloaded the piece 48 from Peer 1002. Now the number of pieces it has is 77.
+Tue Dec  2 23:14:22 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 93.
+Tue Dec  2 23:14:22 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 80.
+Tue Dec  2 23:14:22 2025: Peer 1003 has downloaded the piece 131 from Peer 1001. Now the number of pieces it has is 78.
+Tue Dec  2 23:14:22 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:22 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:22 2025: Peer 1003 has downloaded the piece 112 from Peer 1001. Now the number of pieces it has is 80.
+Tue Dec  2 23:14:22 2025: Peer 1003 has downloaded the piece 44 from Peer 1002. Now the number of pieces it has is 80.
+Tue Dec  2 23:14:22 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 64.
+Tue Dec  2 23:14:22 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 8.
+Tue Dec  2 23:14:22 2025: Peer 1003 has downloaded the piece 85 from Peer 1001. Now the number of pieces it has is 81.
+Tue Dec  2 23:14:22 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:22 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:22 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 4.
+Tue Dec  2 23:14:22 2025: Peer 1003 has downloaded the piece 128 from Peer 1001. Now the number of pieces it has is 82.
+Tue Dec  2 23:14:22 2025: Peer 1003 has downloaded the piece 69 from Peer 1002. Now the number of pieces it has is 83.
+Tue Dec  2 23:14:22 2025: Peer 1003 has downloaded the piece 33 from Peer 1001. Now the number of pieces it has is 84.
+Tue Dec  2 23:14:22 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 28.
+Tue Dec  2 23:14:22 2025: Peer 1003 has downloaded the piece 81 from Peer 1001. Now the number of pieces it has is 85.
+Tue Dec  2 23:14:22 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 95.
+Tue Dec  2 23:14:22 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:22 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:22 2025: Peer 1003 has downloaded the piece 106 from Peer 1001. Now the number of pieces it has is 86.
+Tue Dec  2 23:14:23 2025: Peer 1003 has downloaded the piece 93 from Peer 1002. Now the number of pieces it has is 87.
+Tue Dec  2 23:14:23 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 77.
+Tue Dec  2 23:14:23 2025: Peer 1003 has downloaded the piece 35 from Peer 1001. Now the number of pieces it has is 88.
+Tue Dec  2 23:14:23 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 113.
+Tue Dec  2 23:14:23 2025: Peer 1003 has downloaded the piece 91 from Peer 1001. Now the number of pieces it has is 89.
+Tue Dec  2 23:14:23 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:23 2025: Peer 1003 has downloaded the piece 121 from Peer 1001. Now the number of pieces it has is 90.
+Tue Dec  2 23:14:23 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:23 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 79.
+Tue Dec  2 23:14:23 2025: Peer 1003 has downloaded the piece 94 from Peer 1001. Now the number of pieces it has is 92.
+Tue Dec  2 23:14:23 2025: Peer 1003 has downloaded the piece 95 from Peer 1002. Now the number of pieces it has is 92.
+Tue Dec  2 23:14:23 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:23 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 91.
+Tue Dec  2 23:14:23 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 27.
+Tue Dec  2 23:14:23 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 22.
+Tue Dec  2 23:14:23 2025: Peer 1003 has downloaded the piece 108 from Peer 1001. Now the number of pieces it has is 93.
+Tue Dec  2 23:14:23 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:23 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:23 2025: Peer 1003 has downloaded the piece 50 from Peer 1001. Now the number of pieces it has is 94.
+Tue Dec  2 23:14:23 2025: Peer 1003 has downloaded the piece 113 from Peer 1002. Now the number of pieces it has is 95.
+Tue Dec  2 23:14:23 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 41.
+Tue Dec  2 23:14:23 2025: Peer 1003 has downloaded the piece 123 from Peer 1001. Now the number of pieces it has is 96.
+Tue Dec  2 23:14:23 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 21.
+Tue Dec  2 23:14:23 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:23 2025: Peer 1003 has downloaded the piece 4 from Peer 1002. Now the number of pieces it has is 98.
+Tue Dec  2 23:14:23 2025: Peer 1003 has downloaded the piece 107 from Peer 1001. Now the number of pieces it has is 98.
+Tue Dec  2 23:14:23 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 60.
+Tue Dec  2 23:14:23 2025: Peer 1003 has downloaded the piece 118 from Peer 1001. Now the number of pieces it has is 99.
+Tue Dec  2 23:14:23 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 116.
+Tue Dec  2 23:14:23 2025: Peer 1003 has downloaded the piece 5 from Peer 1001. Now the number of pieces it has is 100.
+Tue Dec  2 23:14:23 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:23 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:23 2025: Peer 1003 has downloaded the piece 13 from Peer 1001. Now the number of pieces it has is 102.
+Tue Dec  2 23:14:23 2025: Peer 1003 has downloaded the piece 59 from Peer 1002. Now the number of pieces it has is 102.
+Tue Dec  2 23:14:23 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 130.
+Tue Dec  2 23:14:23 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:23 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 84.
+Tue Dec  2 23:14:23 2025: Peer 1003 has downloaded the piece 101 from Peer 1001. Now the number of pieces it has is 103.
+Tue Dec  2 23:14:23 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:23 2025: Peer 1003 has downloaded the piece 84 from Peer 1001. Now the number of pieces it has is 105.
+Tue Dec  2 23:14:23 2025: Peer 1003 has downloaded the piece 21 from Peer 1002. Now the number of pieces it has is 105.
+Tue Dec  2 23:14:23 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 39.
+Tue Dec  2 23:14:23 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 20.
+Tue Dec  2 23:14:23 2025: Peer 1003 has downloaded the piece 20 from Peer 1001. Now the number of pieces it has is 106.
+Tue Dec  2 23:14:23 2025: Peer 1003 has downloaded the piece 8 from Peer 1002. Now the number of pieces it has is 108.
+Tue Dec  2 23:14:23 2025: Peer 1003 has downloaded the piece 46 from Peer 1001. Now the number of pieces it has is 108.
+Tue Dec  2 23:14:23 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 99.
+Tue Dec  2 23:14:23 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 56.
+Tue Dec  2 23:14:23 2025: Peer 1003 has downloaded the piece 39 from Peer 1001. Now the number of pieces it has is 109.
+Tue Dec  2 23:14:23 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:24 2025: Peer 1003 has downloaded the piece 130 from Peer 1002. Now the number of pieces it has is 111.
+Tue Dec  2 23:14:24 2025: Peer 1003 has downloaded the piece 74 from Peer 1001. Now the number of pieces it has is 111.
+Tue Dec  2 23:14:24 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 103.
+Tue Dec  2 23:14:24 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 73.
+Tue Dec  2 23:14:24 2025: Peer 1003 has downloaded the piece 22 from Peer 1001. Now the number of pieces it has is 112.
+Tue Dec  2 23:14:24 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:24 2025: Peer 1003 has downloaded the piece 0 from Peer 1001. Now the number of pieces it has is 113.
+Tue Dec  2 23:14:24 2025: Peer 1003 has downloaded the piece 60 from Peer 1002. Now the number of pieces it has is 114.
+Tue Dec  2 23:14:24 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 90.
+Tue Dec  2 23:14:24 2025: Peer 1003 has downloaded the piece 19 from Peer 1001. Now the number of pieces it has is 115.
+Tue Dec  2 23:14:24 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 1.
+Tue Dec  2 23:14:24 2025: Peer 1003 has downloaded the piece 102 from Peer 1001. Now the number of pieces it has is 116.
+Tue Dec  2 23:14:24 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:24 2025: Peer 1003 has downloaded the piece 51 from Peer 1001. Now the number of pieces it has is 118.
+Tue Dec  2 23:14:24 2025: Peer 1003 has downloaded the piece 116 from Peer 1002. Now the number of pieces it has is 118.
+Tue Dec  2 23:14:24 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 0.
+Tue Dec  2 23:14:24 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:24 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 108.
+Tue Dec  2 23:14:24 2025: Peer 1003 has downloaded the piece 79 from Peer 1001. Now the number of pieces it has is 119.
+Tue Dec  2 23:14:24 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:24 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:24 2025: Peer 1003 has downloaded the piece 1 from Peer 1002. Now the number of pieces it has is 121.
+Tue Dec  2 23:14:24 2025: Peer 1003 has downloaded the piece 109 from Peer 1001. Now the number of pieces it has is 121.
+Tue Dec  2 23:14:24 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 26.
+Tue Dec  2 23:14:24 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 131.
+Tue Dec  2 23:14:24 2025: Peer 1003 has downloaded the piece 126 from Peer 1001. Now the number of pieces it has is 122.
+Tue Dec  2 23:14:24 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:24 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 51.
+Tue Dec  2 23:14:24 2025: Peer 1003 has downloaded the piece 124 from Peer 1001. Now the number of pieces it has is 123.
+Tue Dec  2 23:14:24 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:24 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 128.
+Tue Dec  2 23:14:24 2025: Peer 1003 has downloaded the piece 55 from Peer 1001. Now the number of pieces it has is 124.
+Tue Dec  2 23:14:24 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 112.
+Tue Dec  2 23:14:24 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 115.
+Tue Dec  2 23:14:24 2025: Peer 1003 has downloaded the piece 32 from Peer 1001. Now the number of pieces it has is 125.
+Tue Dec  2 23:14:24 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:24 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 65.
+Tue Dec  2 23:14:24 2025: Peer 1003 has downloaded the piece 78 from Peer 1001. Now the number of pieces it has is 126.
+Tue Dec  2 23:14:24 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:24 2025: Peer 1003 has downloaded the piece 87 from Peer 1001. Now the number of pieces it has is 127.
+Tue Dec  2 23:14:24 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 24.
+Tue Dec  2 23:14:24 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:24 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 9.
+Tue Dec  2 23:14:24 2025: Peer 1003 has downloaded the piece 96 from Peer 1001. Now the number of pieces it has is 128.
+Tue Dec  2 23:14:24 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:24 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 61.
+Tue Dec  2 23:14:24 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 32.
+Tue Dec  2 23:14:24 2025: Peer 1003 has downloaded the piece 10 from Peer 1001. Now the number of pieces it has is 129.
+Tue Dec  2 23:14:24 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:24 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 109.
+Tue Dec  2 23:14:24 2025: Peer 1003 has downloaded the piece 18 from Peer 1001. Now the number of pieces it has is 130.
+Tue Dec  2 23:14:24 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:24 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 96.
+Tue Dec  2 23:14:24 2025: Peer 1003 has downloaded the piece 71 from Peer 1001. Now the number of pieces it has is 131.
+Tue Dec  2 23:14:24 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:24 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 121.
+Tue Dec  2 23:14:24 2025: Peer 1003 has downloaded the piece 9 from Peer 1001. Now the number of pieces it has is 132.
+Tue Dec  2 23:14:24 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:24 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 102.
+Tue Dec  2 23:14:24 2025: Peer 1003 has downloaded the piece 38 from Peer 1001. Now the number of pieces it has is 133.
+Tue Dec  2 23:14:24 2025: Peer 1003 has downloaded the complete file.
+Tue Dec  2 23:14:24 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 123.
+Tue Dec  2 23:14:24 2025: Peer 1003 received the 'interested' message from Peer 1002
+Tue Dec  2 23:14:24 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 38.
+Tue Dec  2 23:14:24 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 66.
+Tue Dec  2 23:14:24 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 18.
+Tue Dec  2 23:14:24 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 35.
+Tue Dec  2 23:14:25 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 94.
+Tue Dec  2 23:14:25 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 92.
+Tue Dec  2 23:14:25 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 87.
+Tue Dec  2 23:14:25 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 43.
+Tue Dec  2 23:14:25 2025: Peer 1003 received the 'have' message from Peer 1002 for the piece 71.
+Tue Dec  2 23:14:27 2025: Peer 1003 has the preferred neighbors 1002.
+Tue Dec  2 23:14:32 2025: Peer 1003 has the preferred neighbors 1002.
+Tue Dec  2 23:14:37 2025: Peer 1003 has the preferred neighbors 1002.
+Tue Dec  2 23:14:42 2025: Peer 1003 has the preferred neighbors 1002.
+Tue Dec  2 23:14:47 2025: Peer 1003 has the preferred neighbors 1002.
+Tue Dec  2 23:14:52 2025: Peer 1003 has the preferred neighbors 1002.
+Tue Dec  2 23:14:57 2025: Peer 1003 has the preferred neighbors 1002.
+Tue Dec  2 23:15:02 2025: Peer 1003 has the preferred neighbors 1002.
+Tue Dec  2 23:15:07 2025: Peer 1003 has the preferred neighbors 1002.
+Tue Dec  2 23:15:12 2025: Peer 1003 has the preferred neighbors 1002.
+Tue Dec  2 23:15:17 2025: Peer 1003 has the preferred neighbors 1002.
+Tue Dec  2 23:15:22 2025: Peer 1003 has the preferred neighbors 1002.
+Tue Dec  2 23:15:27 2025: Peer 1003 has the preferred neighbors 1002.
+Tue Dec  2 23:15:32 2025: Peer 1003 has the preferred neighbors 1002.
+Tue Dec  2 23:15:37 2025: Peer 1003 has the preferred neighbors 1002.
+Tue Dec  2 23:15:42 2025: Peer 1003 has the preferred neighbors 1002.
+Tue Dec  2 23:15:47 2025: Peer 1003 has the preferred neighbors 1002.
+Tue Dec  2 23:15:52 2025: Peer 1003 has the preferred neighbors 1002.
+Tue Dec  2 23:15:57 2025: Peer 1003 has the preferred neighbors 1002.
+Tue Dec  2 23:16:02 2025: Peer 1003 has the preferred neighbors 1002.
+Tue Dec  2 23:16:07 2025: Peer 1003 has the preferred neighbors 1002.
+Tue Dec  2 23:16:12 2025: Peer 1003 has the preferred neighbors 1002.
+Tue Dec  2 23:16:17 2025: Peer 1003 has the preferred neighbors 1002.
+Tue Dec  2 23:16:22 2025: Peer 1003 has the preferred neighbors 1002.
+Tue Dec  2 23:16:27 2025: Peer 1003 has the preferred neighbors 1002.
+Tue Dec  2 23:16:32 2025: Peer 1003 has the preferred neighbors 1002.

@@ -30,5 +30,18 @@ if __name__ == "__main__":
     commonInfo = readCommonInfo()
     peerInfo = readPeerInfo()
     host, port, hasFile = peerInfo[peerId]
-    peer = PeerClass(peerId, host, port, hasFile, peerInfo, commonInfo[3], commonInfo[4], commonInfo[5])
+    
+    peer = PeerClass(
+        peer_id=peerId,
+        host=host,
+        port=port,
+        has_file=hasFile,
+        otherPeerInfo=peerInfo,
+        file_name=commonInfo[3],
+        file_size=commonInfo[4],
+        piece_size=commonInfo[5],
+        num_preferred_neighbors=commonInfo[0],
+        unchoking_interval=commonInfo[1],
+        optimistic_unchoking_interval=commonInfo[2]
+    )
     peer.startPeer()

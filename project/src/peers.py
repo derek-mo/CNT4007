@@ -105,6 +105,7 @@ class PeerClass:
                 # print(f"Peer {self.peer_id}: Server socket error: {e}")
         
         # Close server socket when shutting down
+        print(f"Peer {self.peer_id}: Server socket shutting down")
         server_socket.close()
             
     def connectToPeer(self):
@@ -286,7 +287,7 @@ class PeerClass:
             time.sleep(5)  # Check every 5 seconds
 
             if self.check_all_peers_complete():
-                print(f"Peer {self.peer_id}: All peers have completed downloading. Beginning graceful shutdown...")
+                print(f"Peer {self.peer_id}: All peers have completed downloading. Beginning shutdown.")
                 self.shutdown_event.set()
 
         # Close all connections once shutdown is signaled

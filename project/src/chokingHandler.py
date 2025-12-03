@@ -4,8 +4,6 @@ import threading
 import datetime
 
 class ChokingHandler:
-    """Manages choking/unchoking decisions for peer connections"""
-    
     def __init__(self, peer, num_preferred_neighbors, unchoking_interval, optimistic_unchoking_interval):
         self.peer = peer
         self.num_preferred_neighbors = num_preferred_neighbors
@@ -19,7 +17,6 @@ class ChokingHandler:
         self.start_time = time.time()
 
     def select_preferred_neighbors(self):
-        """Select preferred neighbors based on download rate or randomly if file is complete"""
         interested_neighbors = []
         
         # Get all interested neighbors with their download rates
@@ -63,7 +60,6 @@ class ChokingHandler:
         return selected
 
     def select_optimistically_unchoked(self):
-        """Select one random neighbor from interested but choked neighbors"""
         # Get interested neighbors that are currently choked
         choked_interested = []
         for peer_id, state in self.peer.neighbor_states.items():
@@ -83,7 +79,6 @@ class ChokingHandler:
         return self.optimistically_unchoked_id
 
     def apply_choking_decisions(self, newly_unchoked):
-        """Send choke/unchoke messages based on decisions"""
         from messageHandler import Message
         
         all_unchoked = set(newly_unchoked)
@@ -115,7 +110,7 @@ class ChokingHandler:
                 state['choked'] = True
 
     def run_choking_cycle(self):
-        """Main loop for managing choking decisions"""
+        # Main loop for managing choking decisions
         next_preferred_time = self.start_time + self.unchoking_interval
         next_optimistic_time = self.start_time + self.optimistic_unchoking_interval
         

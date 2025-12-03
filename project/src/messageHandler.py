@@ -111,7 +111,7 @@ class MessageHandler:
                             # Check if WE should become interested in THEM
                             # (because they now have a piece we need)
                             if not self.peer.bitfield.has(piece_index):
-                                # They have a piece we don't have - WE send interested to THEM
+                                # They have a piece we don't have WE send interested to THEM
                                 self.sendMessage(socket_connected, Message(2, b''), peer_sending_msg)
                                 print(f"Peer {self.peer.peer_id}: Sending INTERESTED to Peer {peer_sending_msg} (they have piece {piece_index} that we need)")
                             
@@ -125,7 +125,7 @@ class MessageHandler:
                 # Parse the received bitfield
                 print(f"Peer {self.peer.peer_id}: Received bitfield from Peer {peer_sending_msg} ({len(msg.payload)} bytes)")
                 
-                # Store their bitfield (you might want to track this per peer)
+                # Store their bitfield 
                 # For now, compare with our bitfield to determine if we're interested
                 try:
                     # Create a temporary bitfield manager to parse their bitfield

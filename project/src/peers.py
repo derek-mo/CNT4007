@@ -118,7 +118,6 @@ class PeerClass:
                     print("Peer {}: Failed to connect to peer {} at {}:{} - {}".format(self.peer_id, otherPeerId, otherPeerHost, otherPeerPort, e))
         
     def initializeNeighborState(self, peer_id):
-        """Initialize tracking state for a newly connected neighbor"""
         self.neighbor_states[peer_id] = {
             'interested': False,
             'choked': True,  # Start with peer choked
@@ -131,7 +130,6 @@ class PeerClass:
         print(f"Peer {self.peer_id}: Initialized neighbor state for Peer {peer_id} (choked=True, interested=False)")
     
     def updateDownloadRate(self, peer_id, bytes_received):
-        """Update the download rate for a specific peer"""
         if peer_id not in self.neighbor_states:
             return
         
@@ -147,11 +145,9 @@ class PeerClass:
             print(f"Peer {self.peer_id}: Updated download rate for Peer {peer_id} - {state['download_rate']:.0f} bytes/s (total: {state['bytes_received']} bytes)")
     
     def getInterestedNeighbors(self):
-        """Get list of neighbors who are interested"""
         return [peer_id for peer_id, state in self.neighbor_states.items() if state['interested']]
     
     def selectPieceToRequest(self, peer_id):
-        """Select a random piece to request from a specific peer"""
         import random
         
         if peer_id not in self.neighbor_states:
@@ -184,7 +180,6 @@ class PeerClass:
         return random.choice(available_pieces)
     
     def readPiece(self, piece_index):
-        """Read a piece from the file"""
         # Find the file in peer directory
         import os
         file_list = [f for f in os.listdir(self.peer_dir) if os.path.isfile(os.path.join(self.peer_dir, f)) and not f.endswith('.log')]
@@ -206,7 +201,6 @@ class PeerClass:
             return f.read(piece_size)
     
     def writePiece(self, piece_index, data):
-        """Write a piece to the file"""
         file_path = Path(self.peer_dir) / 'thefile'  # Default filename
         
         offset = piece_index * self.bitfield.piece_size

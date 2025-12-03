@@ -118,7 +118,7 @@ class PeerClass:
                     client_socket.connect((otherPeerHost, otherPeerPort))
                     sendHandshake(client_socket, self.peer_id)
                     receivedPeerId = receiveHandshake(client_socket)
-                    # print("Peer {}: Handshake successful with peer {}".format(self.peer_id, receivedPeerId))
+                    print("\nPeer {}: Handshake successful with peer {}\n".format(self.peer_id, receivedPeerId))
                     self.PeersConnections[receivedPeerId] = client_socket
                     self.initializeNeighborState(receivedPeerId)
 
@@ -263,6 +263,8 @@ class PeerClass:
             f.write(data)
     
     def startPeer(self):
+        print("\nPeer {}: set address to: {}, set Port to: {}, set has_file to: {} ".format(self.peer_id, self.host, self.port, self.has_file))
+
         server_thread = threading.Thread(target=self.createServerSocket)
         server_thread.daemon = True
         server_thread.start()
@@ -298,9 +300,9 @@ class PeerClass:
     def handleIncomingHandshake(self, client_socket):
         try:
             receivedPeerId = receiveHandshake(client_socket)
-            # print("Peer {}: Handshake received from peer {}".format(self.peer_id, receivedPeerId))
+            print("\nPeer {}: Handshake received from peer {}".format(self.peer_id, receivedPeerId))
             sendHandshake(client_socket, self.peer_id)
-            # print("Peer {}: Handshake response sent to peer {}".format(self.peer_id, receivedPeerId))
+            print("Peer {}: Handshake response sent to peer {}\n".format(self.peer_id, receivedPeerId))
             self.PeersConnections[receivedPeerId] = client_socket
             self.initializeNeighborState(receivedPeerId)
         except Exception as e:

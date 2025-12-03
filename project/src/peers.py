@@ -32,6 +32,7 @@ class PeerClass:
         self.host = host
         self.port = port
         self.has_file = has_file
+        self.file_name = file_name
         self.otherPeerInfo = otherPeerInfo
         self.PeersConnections = {}
         
@@ -247,7 +248,7 @@ class PeerClass:
             return f.read(piece_size)
     
     def writePiece(self, piece_index, data):
-        file_path = Path(self.peer_dir) / self.file_name  # Use configured filename
+        file_path = Path(self.peer_dir) / self.file_name  # Default filename
         
         offset = piece_index * self.bitfield.piece_size
         

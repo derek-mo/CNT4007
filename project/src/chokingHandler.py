@@ -24,20 +24,21 @@ class ChokingHandler:
             if state['interested']:
                 interested_neighbors.append((state['download_rate'], peer_id))
         
-        print(f"Peer {self.peer.peer_id}: Selecting preferred neighbors from {len(interested_neighbors)} interested peers")
+        # print(f"Peer {self.peer.peer_id}: Selecting preferred neighbors from {len(interested_neighbors)} interested peers")
         
         if not interested_neighbors:
             self.preferred_neighbors = []
-            print(f"Peer {self.peer.peer_id}: No interested neighbors to select")
+            # print(f"Peer {self.peer.peer_id}: No interested neighbors to select")
+            return []
             return []
         
         # If we have the complete file, select randomly
         if self.peer.bitfield.missing() == []:
-            print(f"Peer {self.peer.peer_id}: File complete - selecting neighbors randomly")
+            # print(f"Peer {self.peer.peer_id}: File complete - selecting neighbors randomly")
             random.shuffle(interested_neighbors)
             selected = [peer_id for _, peer_id in interested_neighbors[:self.num_preferred_neighbors]]
         else:
-            print(f"Peer {self.peer.peer_id}: File incomplete - selecting by download rate")
+            # print(f"Peer {self.peer.peer_id}: File incomplete - selecting by download rate")
             # Otherwise, select based on highest download rates
             # Sort by download rate (descending), then randomize ties
             grouped_by_rate = {}
@@ -56,7 +57,7 @@ class ChokingHandler:
             selected = sorted_peers[:self.num_preferred_neighbors]
         
         self.preferred_neighbors = selected
-        print(f"Peer {self.peer.peer_id}: Selected preferred neighbors: {selected}")
+        # print(f"Peer {self.peer.peer_id}: Selected preferred neighbors: {selected}")
         return selected
 
     def select_optimistically_unchoked(self):
@@ -70,12 +71,12 @@ class ChokingHandler:
         
         if not choked_interested:
             self.optimistically_unchoked_id = None
-            print(f"Peer {self.peer.peer_id}: No choked interested neighbors for optimistic unchoke")
+            # print(f"Peer {self.peer.peer_id}: No choked interested neighbors for optimistic unchoke")
             return None
         
         # Randomly select one
         self.optimistically_unchoked_id = random.choice(choked_interested)
-        print(f"Peer {self.peer.peer_id}: Selected optimistically unchoked neighbor: {self.optimistically_unchoked_id} from {len(choked_interested)} candidates")
+        # print(f"Peer {self.peer.peer_id}: Selected optimistically unchoked neighbor: {self.optimistically_unchoked_id} from {len(choked_interested)} candidates")
         return self.optimistically_unchoked_id
 
     def apply_choking_decisions(self, newly_unchoked):
@@ -96,7 +97,7 @@ class ChokingHandler:
             
             if should_be_unchoked and currently_choked:
                 # Unchoke this peer
-                print(f"Peer {self.peer.peer_id}: UNCHOKING Peer {peer_id}")
+                # print(f"Peer {self.peer.peer_id}: UNCHOKING Peer {peer_id}")
                 self.peer.msgHandler.sendMessage(socket_conn, Message(1, b''), peer_id)
                 state['choked'] = False
                 # Reset download rate tracking when unchoking
@@ -105,7 +106,7 @@ class ChokingHandler:
                 
             elif not should_be_unchoked and not currently_choked:
                 # Choke this peer
-                print(f"Peer {self.peer.peer_id}: CHOKING Peer {peer_id}")
+                # print(f"Peer {self.peer.peer_id}: CHOKING Peer {peer_id}")
                 self.peer.msgHandler.sendMessage(socket_conn, Message(0, b''), peer_id)
                 state['choked'] = True
 

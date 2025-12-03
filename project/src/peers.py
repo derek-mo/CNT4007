@@ -48,11 +48,13 @@ class PeerClass:
             dest_file = Path(self.peer_dir) / file_name
             try:
                 shutil.copyfile(src_file, dest_file)
-                print(f"Peer {self.peer_id}: copied {src_file} -> {dest_file}")
+                # print(f"Peer {self.peer_id}: copied {src_file} -> {dest_file}")
             except FileNotFoundError:
-                print(f"Peer {self.peer_id}: source file not found at {src_file}")
+                # print(f"Peer {self.peer_id}: source file not found at {src_file}")
+                pass
             except Exception as e:
-                print(f"Peer {self.peer_id}: failed to copy file - {e}")
+                # print(f"Peer {self.peer_id}: failed to copy file - {e}")
+                pass
         
         self.bitfield = BitfieldManager(total_size=file_size, piece_size=piece_size, peer_dir=self.peer_dir, has_complete=(has_file == 1))
         
@@ -69,7 +71,7 @@ class PeerClass:
         server_socket.bind((self.host, self.port))
         server_socket.listen(5)
         
-        print("Peer {} Server socket created and listening on {}:{}".format(self.peer_id, self.host, self.port))
+        # print("Peer {} Server socket created and listening on {}:{}".format(self.peer_id, self.host, self.port))
 
         while True:
             client_socket, addr = server_socket.accept()
@@ -83,7 +85,7 @@ class PeerClass:
 
             # Always send bitfield message to allow other peer to determine interest
             bitfield_bytes = self.bitfield.to_bytes()
-            print(f"Peer {self.peer_id}: Sending bitfield to Peer {otherPeerId} ({len(bitfield_bytes)} bytes, has_file={self.has_file})")
+            # print(f"Peer {self.peer_id}: Sending bitfield to Peer {otherPeerId} ({len(bitfield_bytes)} bytes, has_file={self.has_file})")
             self.msgHandler.sendMessage(client_socket, Message(5, bitfield_bytes), otherPeerId)
 
             #messaging
@@ -93,12 +95,12 @@ class PeerClass:
         for otherPeerId, (otherPeerHost, otherPeerPort, otherPeerHasFile) in self.otherPeerInfo.items():
             if otherPeerId < self.peer_id:
                 try:
-                    print("Peer {}: Attempting to connect to peer {} at {}:{}".format(self.peer_id, otherPeerId, otherPeerHost, otherPeerPort))
+                    # print("Peer {}: Attempting to connect to peer {} at {}:{}".format(self.peer_id, otherPeerId, otherPeerHost, otherPeerPort))
                     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                     client_socket.connect((otherPeerHost, otherPeerPort))
                     sendHandshake(client_socket, self.peer_id)
                     receivedPeerId = receiveHandshake(client_socket)
-                    print("Peer {}: Handshake successful with peer {}".format(self.peer_id, receivedPeerId))
+                    # print("Peer {}: Handshake successful with peer {}".format(self.peer_id, receivedPeerId))
                     self.PeersConnections[receivedPeerId] = client_socket
                     self.initializeNeighborState(receivedPeerId)
 
@@ -109,13 +111,14 @@ class PeerClass:
 
                     # Always send bitfield message to allow other peer to determine interest
                     bitfield_bytes = self.bitfield.to_bytes()
-                    print(f"Peer {self.peer_id}: Sending bitfield to Peer {otherPeerId} ({len(bitfield_bytes)} bytes, has_file={self.has_file})")
+                    # print(f"Peer {self.peer_id}: Sending bitfield to Peer {otherPeerId} ({len(bitfield_bytes)} bytes, has_file={self.has_file})")
                     self.msgHandler.sendMessage(client_socket, Message(5, bitfield_bytes), otherPeerId)
 
                     threading.Thread(target=self.msgHandler.handleIncomingMessages, args=(client_socket, otherPeerId)).start()
 
                 except Exception as e:
-                    print("Peer {}: Failed to connect to peer {} at {}:{} - {}".format(self.peer_id, otherPeerId, otherPeerHost, otherPeerPort, e))
+                    # print("Peer {}: Failed to connect to peer {} at {}:{} - {}".format(self.peer_id, otherPeerId, otherPeerHost, otherPeerPort, e))
+                    pass
         
     def initializeNeighborState(self, peer_id):
         self.neighbor_states[peer_id] = {
@@ -127,7 +130,7 @@ class PeerClass:
             'bitfield': None,  # Store their bitfield
             'pending_requests': set()  # Track piece indices we've requested from this peer
         }
-        print(f"Peer {self.peer_id}: Initialized neighbor state for Peer {peer_id} (choked=True, interested=False)")
+        # print(f"Peer {self.peer_id}: Initialized neighbor state for Peer {peer_id} (choked=True, interested=False)")
     
     def updateDownloadRate(self, peer_id, bytes_received):
         if peer_id not in self.neighbor_states:
@@ -142,7 +145,7 @@ class PeerClass:
         if time_elapsed > 0:
             state['download_rate'] = state['bytes_received'] / time_elapsed
             state['last_rate_calc'] = current_time
-            print(f"Peer {self.peer_id}: Updated download rate for Peer {peer_id} - {state['download_rate']:.0f} bytes/s (total: {state['bytes_received']} bytes)")
+            # print(f"Peer {self.peer_id}: Updated download rate for Peer {peer_id} - {state['download_rate']:.0f} bytes/s (total: {state['bytes_received']} bytes)")
     
     def getInterestedNeighbors(self):
         return [peer_id for peer_id, state in self.neighbor_states.items() if state['interested']]
@@ -228,7 +231,7 @@ class PeerClass:
         self.connectToPeer()
         
         # Start choking cycle threads
-        print(f"Peer {self.peer_id}: Starting choking handler (preferred={self.choking_handler.num_preferred_neighbors}, interval={self.choking_handler.unchoking_interval}s, optimistic_interval={self.choking_handler.optimistic_unchoking_interval}s)")
+        # print(f"Peer {self.peer_id}: Starting choking handler (preferred={self.choking_handler.num_preferred_neighbors}, interval={self.choking_handler.unchoking_interval}s, optimistic_interval={self.choking_handler.optimistic_unchoking_interval}s)")
         choking_thread = threading.Thread(target=self.choking_handler.run_choking_cycle)
         choking_thread.daemon = True
         choking_thread.start()
@@ -239,10 +242,11 @@ class PeerClass:
     def handleIncomingHandshake(self, client_socket):
         try:
             receivedPeerId = receiveHandshake(client_socket)
-            print("Peer {}: Handshake received from peer {}".format(self.peer_id, receivedPeerId))
+            # print("Peer {}: Handshake received from peer {}".format(self.peer_id, receivedPeerId))
             sendHandshake(client_socket, self.peer_id)
-            print("Peer {}: Handshake response sent to peer {}".format(self.peer_id, receivedPeerId))
+            # print("Peer {}: Handshake response sent to peer {}".format(self.peer_id, receivedPeerId))
             self.PeersConnections[receivedPeerId] = client_socket
             self.initializeNeighborState(receivedPeerId)
         except Exception as e:
-            print("Peer {}: Handshake failed - {}".format(self.peer_id, e))
+            # print("Peer {}: Handshake failed - {}".format(self.peer_id, e))
+            pass

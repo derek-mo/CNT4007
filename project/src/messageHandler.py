@@ -26,9 +26,10 @@ class MessageHandler:
         try:
             encoded_msg = msg.encode()
             socket_connected.sendall(encoded_msg)
-            print(f"Peer {self.peer.peer_id}: Sent message type {msg.msg_type} with payload: {msg.payload} to Peer {peer_receiving_msg}")
+            # print(f"Peer {self.peer.peer_id}: Sent message type {msg.msg_type} with payload: {msg.payload} to Peer {peer_receiving_msg}")
         except Exception as e:
-            print(f"Peer {self.peer.peer_id}: Error sending message - {e}")
+            # print(f"Peer {self.peer.peer_id}: Error sending message - {e}")
+            pass
     
     def receiveMessage(self, socket_connected, peer_sending_msg):
         try:
@@ -39,10 +40,10 @@ class MessageHandler:
             msg_data = socket_connected.recv(length)
             full_data = length_bytes + msg_data
             msg = Message.decode(full_data)
-            print(f"Peer {self.peer.peer_id}: Received message type {msg.msg_type} with payload: {msg.payload} from Peer {peer_sending_msg}")
+            # print(f"Peer {self.peer.peer_id}: Received message type {msg.msg_type} with payload: {msg.payload} from Peer {peer_sending_msg}")
             return msg
         except Exception as e:
-            print(f"Peer {self.peer.peer_id}: Error receiving message - {e}")
+            # print(f"Peer {self.peer.peer_id}: Error receiving message - {e}")
             return None
         
         
@@ -50,7 +51,7 @@ class MessageHandler:
         while True:
             msg = self.receiveMessage(socket_connected, peer_sending_msg)
             if msg is None:
-                print(f"Peer {self.peer.peer_id}: Connection closed by Peer {peer_sending_msg}")
+                # print(f"Peer {self.peer.peer_id}: Connection closed by Peer {peer_sending_msg}")
                 break
             # Message type logic
             # Each message type needs logic implemented. If there a log file write then implement logic above.
@@ -67,9 +68,10 @@ class MessageHandler:
                     # Send request message with piece index (4 bytes)
                     request_payload = piece_index.to_bytes(4, byteorder='big')
                     self.sendMessage(socket_connected, Message(6, request_payload), peer_sending_msg)
-                    print(f"Peer {self.peer.peer_id}: Requesting piece {piece_index} from Peer {peer_sending_msg}")
+                    # print(f"Peer {self.peer.peer_id}: Requesting piece {piece_index} from Peer {peer_sending_msg}")
                 else:
-                    print(f"Peer {self.peer.peer_id}: Unchoked by Peer {peer_sending_msg} but no pieces to request")
+                    # print(f"Peer {self.peer.peer_id}: Unchoked by Peer {peer_sending_msg} but no pieces to request")
+                    pass
                 
                 with open("../log_peer_{}.log".format(self.peer.peer_id), "a") as log_file:
                         log_file.write("{}: Peer {} is unchoked by Peer {}\n".format(datetime.datetime.now().strftime("%c"), self.peer.peer_id, peer_sending_msg))
@@ -78,7 +80,7 @@ class MessageHandler:
                 # Update neighbor state to mark them as interested
                 if peer_sending_msg in self.peer.neighbor_states:
                     self.peer.neighbor_states[peer_sending_msg]['interested'] = True
-                    print(f"Peer {self.peer.peer_id}: Peer {peer_sending_msg} is now INTERESTED")
+                    # print(f"Peer {self.peer.peer_id}: Peer {peer_sending_msg} is now INTERESTED")
                 
                 with open("../log_peer_{}.log".format(self.peer.peer_id), "a") as log_file:
                         log_file.write("{}: Peer {} received the 'interested' message from Peer {}\n".format(datetime.datetime.now().strftime("%c"), self.peer.peer_id, peer_sending_msg))
@@ -87,19 +89,19 @@ class MessageHandler:
                 # Update neighbor state to mark them as not interested
                 if peer_sending_msg in self.peer.neighbor_states:
                     self.peer.neighbor_states[peer_sending_msg]['interested'] = False
-                    print(f"Peer {self.peer.peer_id}: Peer {peer_sending_msg} is now NOT INTERESTED")
+                    # print(f"Peer {self.peer.peer_id}: Peer {peer_sending_msg} is now NOT INTERESTED")
                 
                 with open("../log_peer_{}.log".format(self.peer.peer_id), "a") as log_file:
-                        log_file.write("{}: Peer {} received the 'uninterested' message from Peer {}\n".format(datetime.datetime.now().strftime("%c"), self.peer.peer_id, peer_sending_msg))
+                        log_file.write("{}: Peer {} received the 'not interested' message from Peer {}\n".format(datetime.datetime.now().strftime("%c"), self.peer.peer_id, peer_sending_msg))
 
             elif msg.msg_type == 4:  # Have
                 # Peer is notifying us they have a new piece
                 if len(msg.payload) < 4:
-                    print(f"Peer {self.peer.peer_id}: Invalid have message from Peer {peer_sending_msg}")
+                    # print(f"Peer {self.peer.peer_id}: Invalid have message from Peer {peer_sending_msg}")
                     continue
                 
                 piece_index = int.from_bytes(msg.payload[:4], byteorder='big')
-                print(f"Peer {self.peer.peer_id}: Peer {peer_sending_msg} now has piece {piece_index}")
+                # print(f"Peer {self.peer.peer_id}: Peer {peer_sending_msg} now has piece {piece_index}")
                 
                 # Update their bitfield if we're tracking it
                 if peer_sending_msg in self.peer.neighbor_states:
@@ -113,17 +115,18 @@ class MessageHandler:
                             if not self.peer.bitfield.has(piece_index):
                                 # They have a piece we don't have WE send interested to THEM
                                 self.sendMessage(socket_connected, Message(2, b''), peer_sending_msg)
-                                print(f"Peer {self.peer.peer_id}: Sending INTERESTED to Peer {peer_sending_msg} (they have piece {piece_index} that we need)")
+                                # print(f"Peer {self.peer.peer_id}: Sending INTERESTED to Peer {peer_sending_msg} (they have piece {piece_index} that we need)")
                             
                         except Exception as e:
-                            print(f"Peer {self.peer.peer_id}: Error updating bitfield for Peer {peer_sending_msg} - {e}")
+                            # print(f"Peer {self.peer.peer_id}: Error updating bitfield for Peer {peer_sending_msg} - {e}")
+                            pass
                 
                 with open("../log_peer_{}.log".format(self.peer.peer_id), "a") as log_file:
                         log_file.write("{}: Peer {} received the 'have' message from Peer {} for the piece {}.\n".format(datetime.datetime.now().strftime("%c"), self.peer.peer_id, peer_sending_msg, piece_index))
             
             elif msg.msg_type == 5:  # Bitfield
                 # Parse the received bitfield
-                print(f"Peer {self.peer.peer_id}: Received bitfield from Peer {peer_sending_msg} ({len(msg.payload)} bytes)")
+                # print(f"Peer {self.peer.peer_id}: Received bitfield from Peer {peer_sending_msg} ({len(msg.payload)} bytes)")
                 
                 # Store their bitfield 
                 # For now, compare with our bitfield to determine if we're interested
@@ -154,34 +157,36 @@ class MessageHandler:
                     
                     # Send interested or not interested message
                     if we_are_interested:
-                        print(f"Peer {self.peer.peer_id}: Peer {peer_sending_msg} has pieces we need - sending INTERESTED")
+                        # print(f"Peer {self.peer.peer_id}: Peer {peer_sending_msg} has pieces we need - sending INTERESTED")
                         self.sendMessage(socket_connected, Message(2, b''), peer_sending_msg)
                     else:
-                        print(f"Peer {self.peer.peer_id}: Peer {peer_sending_msg} has no pieces we need - sending NOT INTERESTED")
+                        # print(f"Peer {self.peer.peer_id}: Peer {peer_sending_msg} has no pieces we need - sending NOT INTERESTED")
+                        pass
                         self.sendMessage(socket_connected, Message(3, b''), peer_sending_msg)
                 
                 except Exception as e:
-                    print(f"Peer {self.peer.peer_id}: Error processing bitfield from Peer {peer_sending_msg} - {e}")
+                    # print(f"Peer {self.peer.peer_id}: Error processing bitfield from Peer {peer_sending_msg} - {e}")
+                    pass
                 
 
             elif msg.msg_type == 6:  # Request
                 # Peer is requesting a piece from us
                 if len(msg.payload) < 4:
-                    print(f"Peer {self.peer.peer_id}: Invalid request message from Peer {peer_sending_msg}")
+                    # print(f"Peer {self.peer.peer_id}: Invalid request message from Peer {peer_sending_msg}")
                     continue
                 
                 piece_index = int.from_bytes(msg.payload[:4], byteorder='big')
-                print(f"Peer {self.peer.peer_id}: Received request for piece {piece_index} from Peer {peer_sending_msg}")
+                # print(f"Peer {self.peer.peer_id}: Received request for piece {piece_index} from Peer {peer_sending_msg}")
                 
                 # Check if they are choked
                 if peer_sending_msg in self.peer.neighbor_states:
                     if self.peer.neighbor_states[peer_sending_msg]['choked']:
-                        print(f"Peer {self.peer.peer_id}: Peer {peer_sending_msg} is choked, ignoring request")
+                        # print(f"Peer {self.peer.peer_id}: Peer {peer_sending_msg} is choked, ignoring request")
                         continue
                 
                 # Check if we have the piece
                 if not self.peer.bitfield.has(piece_index):
-                    print(f"Peer {self.peer.peer_id}: Don't have piece {piece_index} requested by Peer {peer_sending_msg}")
+                    # print(f"Peer {self.peer.peer_id}: Don't have piece {piece_index} requested by Peer {peer_sending_msg}")
                     continue
                 
                 # Read the piece from file and send it
@@ -190,20 +195,21 @@ class MessageHandler:
                     # Piece message: 4 bytes index + piece data
                     piece_payload = piece_index.to_bytes(4, byteorder='big') + piece_data
                     self.sendMessage(socket_connected, Message(7, piece_payload), peer_sending_msg)
-                    print(f"Peer {self.peer.peer_id}: Sent piece {piece_index} ({len(piece_data)} bytes) to Peer {peer_sending_msg}")
+                    # print(f"Peer {self.peer.peer_id}: Sent piece {piece_index} ({len(piece_data)} bytes) to Peer {peer_sending_msg}")
                 except Exception as e:
-                    print(f"Peer {self.peer.peer_id}: Error sending piece {piece_index} to Peer {peer_sending_msg} - {e}")
+                    # print(f"Peer {self.peer.peer_id}: Error sending piece {piece_index} to Peer {peer_sending_msg} - {e}")
+                    pass
 
             elif msg.msg_type == 7:  # Piece
                 # Received a piece
                 if len(msg.payload) < 4:
-                    print(f"Peer {self.peer.peer_id}: Invalid piece message from Peer {peer_sending_msg}")
+                    # print(f"Peer {self.peer.peer_id}: Invalid piece message from Peer {peer_sending_msg}")
                     continue
                 
                 piece_index = int.from_bytes(msg.payload[:4], byteorder='big')
                 piece_data = msg.payload[4:]
                 
-                print(f"Peer {self.peer.peer_id}: Received piece {piece_index} ({len(piece_data)} bytes) from Peer {peer_sending_msg}")
+                # print(f"Peer {self.peer.peer_id}: Received piece {piece_index} ({len(piece_data)} bytes) from Peer {peer_sending_msg}")
                 
                 # Remove from pending requests
                 if peer_sending_msg in self.peer.neighbor_states:
@@ -215,7 +221,7 @@ class MessageHandler:
                 try:
                     self.peer.writePiece(piece_index, piece_data)
                     self.peer.bitfield.mark_have(piece_index)
-                    print(f"Peer {self.peer.peer_id}: Successfully saved piece {piece_index}")
+                    # print(f"Peer {self.peer.peer_id}: Successfully saved piece {piece_index}")
                     
                     # Log download completion for this piece
                     num_pieces = self.peer.bitfield.num_pieces
@@ -231,22 +237,27 @@ class MessageHandler:
                     
                     # Check if download is complete
                     if not self.peer.bitfield.missing():
-                        print(f"Peer {self.peer.peer_id}: Download complete!")
+                        # print(f"Peer {self.peer.peer_id}: Download complete!")
                         with open(f"../log_peer_{self.peer.peer_id}.log", "a") as log_file:
                             log_file.write(f"{datetime.datetime.now().strftime('%c')}: Peer {self.peer.peer_id} has downloaded the complete file.\n")
                     else:
                         # Request another piece from the same peer if available
+                        pass
                         next_piece = self.peer.selectPieceToRequest(peer_sending_msg)
                         if next_piece is not None:
                             self.peer.neighbor_states[peer_sending_msg]['pending_requests'].add(next_piece)
                             request_payload = next_piece.to_bytes(4, byteorder='big')
                             self.sendMessage(socket_connected, Message(6, request_payload), peer_sending_msg)
-                            print(f"Peer {self.peer.peer_id}: Requesting next piece {next_piece} from Peer {peer_sending_msg}")
+                            # print(f"Peer {self.peer.peer_id}: Requesting next piece {next_piece} from Peer {peer_sending_msg}")
                         else:
-                            print(f"Peer {self.peer.peer_id}: No more pieces to request from Peer {peer_sending_msg}")
+                            # print(f"Peer {self.peer.peer_id}: No more pieces to request from Peer {peer_sending_msg}")
+                            pass
                 
                 except Exception as e:
-                    print(f"Peer {self.peer.peer_id}: Error saving piece {piece_index} - {e}")
+                    # print(f"Peer {self.peer.peer_id}: Error saving piece {piece_index} - {e}")
+                    pass
                 
             else:
-                print(f"Peer {self.peer.peer_id}: Unknown message type {msg.msg_type} from Peer {peer_sending_msg}")
+                # print(f"Peer {self.peer.peer_id}: Unknown message type {msg.msg_type} from Peer {peer_sending_msg}")
+                pass
+                pass

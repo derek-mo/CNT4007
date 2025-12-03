@@ -23,7 +23,7 @@ def readCommonInfo():
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print("Please use this in terminal: python peerProcess.py <peer_id>")
+        # print("Please use this in terminal: python peerProcess.py <peer_id>")
         sys.exit(1)
 
     peerId = int(sys.argv[1])

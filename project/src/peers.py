@@ -66,6 +66,9 @@ class PeerClass:
             optimistic_unchoking_interval=optimistic_unchoking_interval
         )
 
+        # --- NEW: global "we're done" flag ---
+        self.shutdown_event = threading.Event()
+
     def createServerSocket(self):
         server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server_socket.bind((self.host, self.port))
@@ -73,23 +76,36 @@ class PeerClass:
         
         # print("Peer {} Server socket created and listening on {}:{}".format(self.peer_id, self.host, self.port))
 
-        while True:
-            client_socket, addr = server_socket.accept()
-            self.handleIncomingHandshake(client_socket)
+        while not self.shutdown_event.is_set():
+            try:
+                server_socket.settimeout(1.0)  # Set timeout to check shutdown periodically
+                client_socket, addr = server_socket.accept()
+                self.handleIncomingHandshake(client_socket)
 
-            # Writing log logic
-            # peer accepts a TCP connection from other peer (peer is connected from peer))
-            otherPeerId = next((pid for pid, socket in self.PeersConnections.items() if socket == client_socket), None)
-            with open("../log_peer_{}.log".format(self.peer_id), "a") as log_file:
-                log_file.write("{}: Peer {} is connected from Peer {}\n".format(datetime.datetime.now().strftime("%c"), self.peer_id, otherPeerId)) # need access to other peer id
+                # Writing log logic
+                # peer accepts a TCP connection from other peer (peer is connected from peer))
+                otherPeerId = next((pid for pid, socket in self.PeersConnections.items() if socket == client_socket), None)
+                with open("../log_peer_{}.log".format(self.peer_id), "a") as log_file:
+                    log_file.write("{}: Peer {} is connected from Peer {}\n".format(datetime.datetime.now().strftime("%c"), self.peer_id, otherPeerId)) # need access to other peer id
 
-            # Always send bitfield message to allow other peer to determine interest
-            bitfield_bytes = self.bitfield.to_bytes()
-            # print(f"Peer {self.peer_id}: Sending bitfield to Peer {otherPeerId} ({len(bitfield_bytes)} bytes, has_file={self.has_file})")
-            self.msgHandler.sendMessage(client_socket, Message(5, bitfield_bytes), otherPeerId)
+                # Always send bitfield message to allow other peer to determine interest
+                bitfield_bytes = self.bitfield.to_bytes()
+                # print(f"Peer {self.peer_id}: Sending bitfield to Peer {otherPeerId} ({len(bitfield_bytes)} bytes, has_file={self.has_file})")
+                self.msgHandler.sendMessage(client_socket, Message(5, bitfield_bytes), otherPeerId)
 
-            #messaging
-            threading.Thread(target=self.msgHandler.handleIncomingMessages, args=(client_socket, otherPeerId)).start()
+                #messaging
+                threading.Thread(target=self.msgHandler.handleIncomingMessages, args=(client_socket, otherPeerId)).start()
+            except socket.timeout:
+                # Timeout is expected - just continue to check shutdown
+                continue
+            except Exception as e:
+                # If shutdown is set, break out
+                if self.shutdown_event.is_set():
+                    break
+                # print(f"Peer {self.peer_id}: Server socket error: {e}")
+        
+        # Close server socket when shutting down
+        server_socket.close()
             
     def connectToPeer(self):
         for otherPeerId, (otherPeerHost, otherPeerPort, otherPeerHasFile) in self.otherPeerInfo.items():
@@ -149,6 +165,35 @@ class PeerClass:
     
     def getInterestedNeighbors(self):
         return [peer_id for peer_id, state in self.neighbor_states.items() if state['interested']]
+
+    def check_all_peers_complete(self):
+        """
+        Returns True iff:
+          - we have all pieces, AND
+          - for every other peer we know about, we have a full bitfield
+            and they also have all pieces.
+        """
+        # We must have the complete file
+        if self.bitfield.missing():
+            return False
+
+        # Check each other peer's bitfield
+        for pid in self.otherPeerInfo.keys():
+            if pid == self.peer_id:
+                continue
+
+            state = self.neighbor_states.get(pid)
+            if not state:
+                return False
+
+            bf = state.get('bitfield')
+            if bf is None:
+                return False
+
+            if bf.missing():  # they are still missing some pieces
+                return False
+
+        return True
     
     def selectPieceToRequest(self, peer_id):
         import random
@@ -236,8 +281,23 @@ class PeerClass:
         choking_thread.daemon = True
         choking_thread.start()
 
-        while True:
-            time.sleep(10)  # Keep the main thread alive
+        # --- NEW: main shutdown loop ---
+        while not self.shutdown_event.is_set():
+            time.sleep(5)  # Check every 5 seconds
+
+            if self.check_all_peers_complete():
+                print(f"Peer {self.peer_id}: All peers have completed downloading. Beginning graceful shutdown...")
+                self.shutdown_event.set()
+
+        # Close all connections once shutdown is signaled
+        for peer_id, socket_conn in list(self.PeersConnections.items()):
+            try:
+                socket_conn.close()
+                print(f"Peer {self.peer_id}: Closed connection to Peer {peer_id}")
+            except Exception:
+                pass
+
+        print(f"Peer {self.peer_id}: Termination complete.")
 
     def handleIncomingHandshake(self, client_socket):
         try:

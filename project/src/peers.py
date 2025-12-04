@@ -35,6 +35,8 @@ class PeerClass:
         self.file_name = file_name
         self.otherPeerInfo = otherPeerInfo
         self.PeersConnections = {}
+
+        self.PeersCompleted = set() #Tracks ids of peers that have completed the download
         
         # Neighbor state tracking for choking decisions
         self.neighbor_states = {}  # peer_id -> {interested: bool, choked: bool, download_rate: float, bytes_received: int, last_rate_calc: time, bitfield: BitfieldManager, pending_requests: set}
@@ -94,6 +96,10 @@ class PeerClass:
                 # print(f"Peer {self.peer_id}: Sending bitfield to Peer {otherPeerId} ({len(bitfield_bytes)} bytes, has_file={self.has_file})")
                 self.msgHandler.sendMessage(client_socket, Message(5, bitfield_bytes), otherPeerId)
 
+                # After sending bitfield, we also let the peer know if we already have the full file.
+                if not self.bitfield.missing():
+                    self.msgHandler.sendMessage(client_socket, Message(8, b''), otherPeerId)
+
                 #messaging
                 threading.Thread(target=self.msgHandler.handleIncomingMessages, args=(client_socket, otherPeerId)).start()
             except socket.timeout:
@@ -131,6 +137,10 @@ class PeerClass:
                     bitfield_bytes = self.bitfield.to_bytes()
                     # print(f"Peer {self.peer_id}: Sending bitfield to Peer {otherPeerId} ({len(bitfield_bytes)} bytes, has_file={self.has_file})")
                     self.msgHandler.sendMessage(client_socket, Message(5, bitfield_bytes), otherPeerId)
+
+                    # After sending bitfield, we also let the peer know if we already have the full file.
+                    if not self.bitfield.missing():
+                        self.msgHandler.sendMessage(client_socket, Message(8, b''), otherPeerId)
 
                     threading.Thread(target=self.msgHandler.handleIncomingMessages, args=(client_socket, otherPeerId)).start()
 
@@ -190,39 +200,39 @@ class PeerClass:
                 return False
 
         return True
-    
+
     def selectPieceToRequest(self, peer_id):
         import random
-        
+
         if peer_id not in self.neighbor_states:
             return None
-        
+
         state = self.neighbor_states[peer_id]
         if state['bitfield'] is None:
             return None
-        
+
         # Get pieces we need
         our_missing = self.bitfield.missing()
         if not our_missing:
             return None  # We have everything
-        
+
         # Get pieces they have that we need and haven't requested yet
         # Check all pending requests across all peers to avoid duplicate requests
         all_pending = set()
         for pid, pstate in self.neighbor_states.items():
             all_pending.update(pstate['pending_requests'])
-        
+
         available_pieces = []
         for piece_index in our_missing:
             if state['bitfield'].has(piece_index) and piece_index not in all_pending:
                 available_pieces.append(piece_index)
-        
+
         if not available_pieces:
             return None
-        
+
         # Select randomly
         return random.choice(available_pieces)
-    
+
     def readPiece(self, piece_index):
         # Find the file in peer directory
         import os
@@ -272,7 +282,7 @@ class PeerClass:
         time.sleep(1)  # Give the server a moment to start
 
         self.connectToPeer()
-        
+
         # Start choking cycle threads
         # print(f"Peer {self.peer_id}: Starting choking handler (preferred={self.choking_handler.num_preferred_neighbors}, interval={self.choking_handler.unchoking_interval}s, optimistic_interval={self.choking_handler.optimistic_unchoking_interval}s)")
         choking_thread = threading.Thread(target=self.choking_handler.run_choking_cycle)
@@ -281,9 +291,13 @@ class PeerClass:
 
         # --- NEW: main shutdown loop ---
         while not self.shutdown_event.is_set():
-            time.sleep(5)  # Check every 5 seconds
+            time.sleep(2)  # Check every 5 seconds
 
-            if self.check_all_peers_complete():
+            print(f"OtherPeerInfo: {self.otherPeerInfo}")
+            print(f"Compelted: {self.PeersCompleted}")
+            if not self.bitfield.missing():
+                self.PeersCompleted.add(self.peer_id)
+            if len(self.otherPeerInfo) == len(self.PeersCompleted):
                 print(f"Peer {self.peer_id}: All peers have completed downloading. Beginning shutdown.")
                 self.shutdown_event.set()
 

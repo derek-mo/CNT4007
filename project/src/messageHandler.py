@@ -262,6 +262,9 @@ class MessageHandler:
                             neighbor_socket = self.peer.PeersConnections.get(neighbor_peer_id)
                             if neighbor_socket:
                                 self.sendMessage(neighbor_socket, Message(3, b''), neighbor_peer_id)
+                                # NEW: Also we send an 8th type of message, that indicates to others that we have the completed file
+                                self.sendMessage(neighbor_socket, Message(8, b''), neighbor_peer_id)
+                                self.peer.PeersCompleted.add(self.peer.peer_id)
                         
                         # See if the entire swarm is done now
                         if self.peer.check_all_peers_complete():
@@ -283,7 +286,11 @@ class MessageHandler:
                 except Exception as e:
                     # print(f"Peer {self.peer.peer_id}: Error saving piece {piece_index} - {e}")
                     pass
-                
+
+            elif msg.msg_type == 8: #Complete file downloaded
+                self.peer.PeersCompleted.add(peer_sending_msg)
+                print(f"Peers completed: {self.peer.PeersCompleted}")
+
             else:
                 # print(f"Peer {self.peer.peer_id}: Unknown message type {msg.msg_type} from Peer {peer_sending_msg}")
                 pass

@@ -1,4 +1,5 @@
 import datetime
+import time
 
 class Message:
     def __init__(self, msg_type, payload=b''):
@@ -63,8 +64,8 @@ class MessageHandler:
                 # We've been unchoked, request a piece if available
                 piece_index = self.peer.selectPieceToRequest(peer_sending_msg)
                 if piece_index is not None:
-                    # Mark as pending request
-                    self.peer.neighbor_states[peer_sending_msg]['pending_requests'].add(piece_index)
+                    # Mark as pending request with timestamp
+                    self.peer.neighbor_states[peer_sending_msg]['pending_requests'][piece_index] = time.time()
                     # Send request message with piece index (4 bytes)
                     request_payload = piece_index.to_bytes(4, byteorder='big')
                     self.sendMessage(socket_connected, Message(6, request_payload), peer_sending_msg)
@@ -212,7 +213,7 @@ class MessageHandler:
                 
                 # Remove from pending requests
                 if peer_sending_msg in self.peer.neighbor_states:
-                    self.peer.neighbor_states[peer_sending_msg]['pending_requests'].discard(piece_index)
+                    self.peer.neighbor_states[peer_sending_msg]['pending_requests'].pop(piece_index, None)
                     # Update download rate
                     self.peer.updateDownloadRate(peer_sending_msg, len(piece_data))
                 
@@ -272,7 +273,12 @@ class MessageHandler:
                         pass
                         next_piece = self.peer.selectPieceToRequest(peer_sending_msg)
                         if next_piece is not None:
-                            self.peer.neighbor_states[peer_sending_msg]['pending_requests'].add(next_piece)
+                            # HERE CHANGES
+                            pr = self.peer.neighbor_states[peer_sending_msg].get('pending_requests')
+                            if isinstance(pr, dict):
+                                pr[next_piece] = time.time()
+                            else:
+                                pr.add(next_piece)
                             request_payload = next_piece.to_bytes(4, byteorder='big')
                             self.sendMessage(socket_connected, Message(6, request_payload), peer_sending_msg)
                             # print(f"Peer {self.peer.peer_id}: Requesting next piece {next_piece} from Peer {peer_sending_msg}")

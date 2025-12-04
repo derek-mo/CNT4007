@@ -37,7 +37,7 @@ class PeerClass:
         self.PeersConnections = {}
         
         # Neighbor state tracking for choking decisions
-        self.neighbor_states = {}  # peer_id -> {interested: bool, choked: bool, download_rate: float, bytes_received: int, last_rate_calc: time, bitfield: BitfieldManager, pending_requests: set}
+        self.neighbor_states = {}  # peer_id -> {interested: bool, choked: bool, download_rate: float, bytes_received: int, last_rate_calc: time, bitfield: BitfieldManager, pending_requests: dict(piece_index->timestamp)}
         self.download_start_time = time.time()
         
         self.msgHandler = MessageHandler(self)
@@ -146,7 +146,7 @@ class PeerClass:
             'bytes_received': 0,
             'last_rate_calc': time.time(),
             'bitfield': None,  # Store their bitfield
-            'pending_requests': set()  # Track piece indices we've requested from this peer
+            'pending_requests': {}  # Track piece indices we've requested from this peer (piece_index -> timestamp)
         }
         # print(f"Peer {self.peer_id}: Initialized neighbor state for Peer {peer_id} (choked=True, interested=False)")
     
@@ -193,6 +193,7 @@ class PeerClass:
     
     def selectPieceToRequest(self, peer_id):
         import random
+        import time
         
         if peer_id not in self.neighbor_states:
             return None
@@ -206,11 +207,20 @@ class PeerClass:
         if not our_missing:
             return None  # We have everything
         
+        # Clean up expired pending requests (older than 10 seconds)
+        current_time = time.time()
+        timeout = 10
+        for pid, pstate in self.neighbor_states.items():
+            expired = [piece for piece, timestamp in pstate['pending_requests'].items() 
+                      if current_time - timestamp > timeout]
+            for piece in expired:
+                pstate['pending_requests'].pop(piece, None)
+        
         # Get pieces they have that we need and haven't requested yet
         # Check all pending requests across all peers to avoid duplicate requests
         all_pending = set()
         for pid, pstate in self.neighbor_states.items():
-            all_pending.update(pstate['pending_requests'])
+            all_pending.update(pstate['pending_requests'].keys())
         
         available_pieces = []
         for piece_index in our_missing:

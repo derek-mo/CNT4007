@@ -16,8 +16,11 @@ def sendHandshake(client_socket, peerId):
     client_socket.sendall(header + zeroBits + peerIdBytes)
 
 def receiveHandshake(client_socket):
+    from messageHandler import recv_exact
     expected_header = b"P2PFILESHARINGPROJ"
-    data = client_socket.recv(32)
+    data = recv_exact(client_socket, 32)
+    if not data:
+        raise ValueError("Connection closed during handshake")
     header = data[:18]
     if header != expected_header:
         raise ValueError("Invalid handshake header")
@@ -37,16 +40,20 @@ class PeerClass:
         self.PeersConnections = {}
         
         # Neighbor state tracking for choking decisions
-        self.neighbor_states = {}  # peer_id -> {interested: bool, choked: bool, download_rate: float, bytes_received: int, last_rate_calc: time, bitfield: BitfieldManager, pending_requests: set}
+        self.neighbor_states = {}  # peer_id -> {interested_in_us: bool, we_are_interested: bool, choked: bool, download_rate: float, bytes_received: int, last_rate_calc: time, bitfield: BitfieldManager, pending_requests: set}
         self.download_start_time = time.time()
         
         self.msgHandler = MessageHandler(self)
         self.peer_dir = f"../peer_{self.peer_id}"
         os.makedirs(self.peer_dir, exist_ok=True)
+        
+        # Track the actual data file path explicitly to avoid file selection confusion
+        self.data_file_path = Path(self.peer_dir) / file_name
+        
         if has_file == 1:
             # locate repository root robustly and copy `thefile` into the peer directory
             src_file = Path(__file__).resolve().parents[2] / file_name
-            dest_file = Path(self.peer_dir) / file_name
+            dest_file = self.data_file_path  # Use tracked path
             try:
                 shutil.copyfile(src_file, dest_file)
                 # print(f"Peer {self.peer_id}: copied {src_file} -> {dest_file}")
@@ -140,7 +147,8 @@ class PeerClass:
         
     def initializeNeighborState(self, peer_id):
         self.neighbor_states[peer_id] = {
-            'interested': False,
+            'interested_in_us': False,  # They are interested in downloading from us
+            'we_are_interested': False,  # We are interested in downloading from them
             'choked': True,  # Start with peer choked
             'download_rate': 0.0,
             'bytes_received': 0,
@@ -148,7 +156,7 @@ class PeerClass:
             'bitfield': None,  # Store their bitfield
             'pending_requests': set()  # Track piece indices we've requested from this peer
         }
-        # print(f"Peer {self.peer_id}: Initialized neighbor state for Peer {peer_id} (choked=True, interested=False)")
+        # print(f"Peer {self.peer_id}: Initialized neighbor state for Peer {peer_id} (choked=True, interested_in_us=False)")
     
     def updateDownloadRate(self, peer_id, bytes_received):
         if peer_id not in self.neighbor_states:
@@ -166,7 +174,7 @@ class PeerClass:
             # print(f"Peer {self.peer_id}: Updated download rate for Peer {peer_id} - {state['download_rate']:.0f} bytes/s (total: {state['bytes_received']} bytes)")
     
     def getInterestedNeighbors(self):
-        return [peer_id for peer_id, state in self.neighbor_states.items() if state['interested']]
+        return [peer_id for peer_id, state in self.neighbor_states.items() if state['interested_in_us']]
 
     def check_all_peers_complete(self):
         # We must have the complete file
@@ -224,13 +232,11 @@ class PeerClass:
         return random.choice(available_pieces)
     
     def readPiece(self, piece_index):
-        # Find the file in peer directory
-        import os
-        file_list = [f for f in os.listdir(self.peer_dir) if os.path.isfile(os.path.join(self.peer_dir, f)) and not f.endswith('.log')]
-        if not file_list:
-            raise FileNotFoundError(f"No file found in {self.peer_dir}")
+        # Use the explicitly tracked data file path instead of scanning directory
+        file_path = self.data_file_path
         
-        file_path = Path(self.peer_dir) / file_list[0]
+        if not file_path.exists():
+            raise FileNotFoundError(f"Data file not found: {file_path}")
         
         offset = piece_index * self.bitfield.piece_size
         piece_size = self.bitfield.piece_size
@@ -245,7 +251,7 @@ class PeerClass:
             return f.read(piece_size)
     
     def writePiece(self, piece_index, data):
-        file_path = Path(self.peer_dir) / self.file_name  # Default filename
+        file_path = self.data_file_path  # Use tracked path
         
         offset = piece_index * self.bitfield.piece_size
         

@@ -21,7 +21,7 @@ class ChokingHandler:
         
         # Get all interested neighbors with their download rates
         for peer_id, state in self.peer.neighbor_states.items():
-            if state['interested']:
+            if state['interested_in_us']:  # They are interested in downloading from us
                 interested_neighbors.append((state['download_rate'], peer_id))
         
         # print(f"Peer {self.peer.peer_id}: Selecting preferred neighbors from {len(interested_neighbors)} interested peers")
@@ -64,7 +64,7 @@ class ChokingHandler:
         # Get interested neighbors that are currently choked
         choked_interested = []
         for peer_id, state in self.peer.neighbor_states.items():
-            if state['interested'] and state['choked']:
+            if state['interested_in_us'] and state['choked']:  # They want to download from us and are choked
                 # Don't include already preferred neighbors
                 if peer_id not in self.preferred_neighbors:
                     choked_interested.append(peer_id)

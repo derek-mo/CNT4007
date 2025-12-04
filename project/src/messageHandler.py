@@ -1,5 +1,15 @@
 import datetime
 
+def recv_exact(sock, n):
+    """Receive exactly n bytes from socket, handling TCP fragmentation."""
+    data = b''
+    while len(data) < n:
+        chunk = sock.recv(n - len(data))
+        if not chunk:
+            return None  # connection closed
+        data += chunk
+    return data
+
 class Message:
     def __init__(self, msg_type, payload=b''):
         self.msg_type = msg_type
@@ -33,11 +43,13 @@ class MessageHandler:
     
     def receiveMessage(self, socket_connected, peer_sending_msg):
         try:
-            length_bytes = socket_connected.recv(4)
+            length_bytes = recv_exact(socket_connected, 4)
             if not length_bytes:
                 return None
             length = int.from_bytes(length_bytes, byteorder='big')
-            msg_data = socket_connected.recv(length)
+            msg_data = recv_exact(socket_connected, length)
+            if not msg_data:
+                return None
             full_data = length_bytes + msg_data
             msg = Message.decode(full_data)
             # print(f"Peer {self.peer.peer_id}: Received message type {msg.msg_type} with payload: {msg.payload} from Peer {peer_sending_msg}")
@@ -77,18 +89,18 @@ class MessageHandler:
                         log_file.write("{}: Peer {} is unchoked by Peer {}\n".format(datetime.datetime.now().strftime("%c"), self.peer.peer_id, peer_sending_msg))
 
             elif msg.msg_type == 2:  # Interested
-                # Update neighbor state to mark them as interested
+                # Update neighbor state to mark them as interested in us
                 if peer_sending_msg in self.peer.neighbor_states:
-                    self.peer.neighbor_states[peer_sending_msg]['interested'] = True
+                    self.peer.neighbor_states[peer_sending_msg]['interested_in_us'] = True
                     # print(f"Peer {self.peer.peer_id}: Peer {peer_sending_msg} is now INTERESTED")
                 
                 with open("../log_peer_{}.log".format(self.peer.peer_id), "a") as log_file:
                         log_file.write("{}: Peer {} received the 'interested' message from Peer {}\n".format(datetime.datetime.now().strftime("%c"), self.peer.peer_id, peer_sending_msg))
 
             elif msg.msg_type == 3:  # Not Interested
-                # Update neighbor state to mark them as not interested
+                # Update neighbor state to mark them as not interested in us
                 if peer_sending_msg in self.peer.neighbor_states:
-                    self.peer.neighbor_states[peer_sending_msg]['interested'] = False
+                    self.peer.neighbor_states[peer_sending_msg]['interested_in_us'] = False
                     print(f"Peer {self.peer.peer_id}: Peer {peer_sending_msg} is now NOT INTERESTED")
                 
                 with open("../log_peer_{}.log".format(self.peer.peer_id), "a") as log_file:
@@ -110,12 +122,21 @@ class MessageHandler:
                         try:
                             neighbor_state['bitfield'].mark_have(piece_index)
                             
-                            # Check if WE should become interested in THEM
-                            # (because they now have a piece we need)
-                            if not self.peer.bitfield.has(piece_index):
-                                # They have a piece we don't have WE send interested to THEM
+                            # Check if WE should become interested in THEM per spec
+                            our_missing = self.peer.bitfield.missing()
+                            we_need_from_them = any(neighbor_state['bitfield'].has(i) for i in our_missing)
+                            
+                            current_interest = neighbor_state.get('we_are_interested', False)
+                            if we_need_from_them and not current_interest:
+                                # Send interested
                                 self.sendMessage(socket_connected, Message(2, b''), peer_sending_msg)
-                                # print(f"Peer {self.peer.peer_id}: Sending INTERESTED to Peer {peer_sending_msg} (they have piece {piece_index} that we need)")
+                                neighbor_state['we_are_interested'] = True
+                                # print(f"Peer {self.peer.peer_id}: Sending INTERESTED to Peer {peer_sending_msg}")
+                            elif not we_need_from_them and current_interest:
+                                # Send not interested 
+                                self.sendMessage(socket_connected, Message(3, b''), peer_sending_msg)
+                                neighbor_state['we_are_interested'] = False
+                                # print(f"Peer {self.peer.peer_id}: Sending NOT INTERESTED to Peer {peer_sending_msg}")
                             
                         except Exception as e:
                             # print(f"Peer {self.peer.peer_id}: Error updating bitfield for Peer {peer_sending_msg} - {e}")
@@ -159,9 +180,13 @@ class MessageHandler:
                     if we_are_interested:
                         # print(f"Peer {self.peer.peer_id}: Peer {peer_sending_msg} has pieces we need - sending INTERESTED")
                         self.sendMessage(socket_connected, Message(2, b''), peer_sending_msg)
+                        if peer_sending_msg in self.peer.neighbor_states:
+                            self.peer.neighbor_states[peer_sending_msg]['we_are_interested'] = True
                     else:
                         # print(f"Peer {self.peer.peer_id}: Peer {peer_sending_msg} has no pieces we need - sending NOT INTERESTED")
                         self.sendMessage(socket_connected, Message(3, b''), peer_sending_msg)
+                        if peer_sending_msg in self.peer.neighbor_states:
+                            self.peer.neighbor_states[peer_sending_msg]['we_are_interested'] = False
                 
                 except Exception as e:
                     # print(f"Peer {self.peer.peer_id}: Error processing bitfield from Peer {peer_sending_msg} - {e}")
@@ -243,12 +268,12 @@ class MessageHandler:
                             they_have_any = any(neighbor_bitfield.has(i) for i in our_missing)
                             
                             # If they no longer have anything interesting and we were previously interested
-                            if not they_have_any and neighbor_state.get('interested', False):
+                            if not they_have_any and neighbor_state.get('we_are_interested', False):
                                 neighbor_socket = self.peer.PeersConnections.get(neighbor_peer_id)
                                 if neighbor_socket:
                                     self.sendMessage(neighbor_socket, Message(3, b''), neighbor_peer_id)
-                                    print(f"Peer {self.peer.peer_id}: Sending 'Not Interested' to Peer {peer_sending_msg}")
-                                    neighbor_state['interested'] = False
+                                    print(f"Peer {self.peer.peer_id}: Sending 'Not Interested' to Peer {neighbor_peer_id}")
+                                    neighbor_state['we_are_interested'] = False
 
                     
                     # Check if download is complete

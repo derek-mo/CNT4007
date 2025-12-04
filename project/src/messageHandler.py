@@ -46,6 +46,45 @@ class MessageHandler:
             # print(f"Peer {self.peer.peer_id}: Error receiving message - {e}")
             return None
         
+    def reevaluate_interest_for_all(self):
+        try:
+            our_missing = self.peer.bitfield.missing()
+            # If we have everything, notify everyone we are not interested
+            if not our_missing:
+                for pid, state in self.peer.neighbor_states.items():
+                    if state.get('we_interested'):
+                        sock = self.peer.PeersConnections.get(pid)
+                        if sock:
+                            self.sendMessage(sock, Message(3, b''), pid)
+                        state['we_interested'] = False
+                return
+
+            for pid, state in self.peer.neighbor_states.items():
+                their_bf = state.get('bitfield')
+                if their_bf is None:
+                    continue
+                # do they have at least one piece we need?
+                they_have_interesting = False
+                for idx in our_missing:
+                    if their_bf.has(idx):
+                        they_have_interesting = True
+                        break
+
+                sock = self.peer.PeersConnections.get(pid)
+                if they_have_interesting:
+                    if not state.get('we_interested'):
+                        if sock:
+                            self.sendMessage(sock, Message(2, b''), pid)
+                        state['we_interested'] = True
+                else:
+                    if state.get('we_interested'):
+                        if sock:
+                            self.sendMessage(sock, Message(3, b''), pid)
+                        state['we_interested'] = False
+        except Exception:
+            # swallow exceptions to avoid crashing message loop
+            pass
+        
         
     def handleIncomingMessages(self, socket_connected, peer_sending_msg):
         while not self.peer.shutdown_event.is_set():
@@ -109,14 +148,23 @@ class MessageHandler:
                     if neighbor_state['bitfield'] is not None:
                         try:
                             neighbor_state['bitfield'].mark_have(piece_index)
-                            
+
                             # Check if WE should become interested in THEM
                             # (because they now have a piece we need)
                             if not self.peer.bitfield.has(piece_index):
                                 # They have a piece we don't have WE send interested to THEM
                                 self.sendMessage(socket_connected, Message(2, b''), peer_sending_msg)
+                                # mark that we have sent INTERESTED to this neighbor
+                                if peer_sending_msg in self.peer.neighbor_states:
+                                    self.peer.neighbor_states[peer_sending_msg]['we_interested'] = True
                                 # print(f"Peer {self.peer.peer_id}: Sending INTERESTED to Peer {peer_sending_msg} (they have piece {piece_index} that we need)")
-                            
+
+                            # After updating their bitfield, re-evaluate interest across neighbors
+                            try:
+                                self.reevaluate_interest_for_all()
+                            except Exception:
+                                pass
+
                         except Exception as e:
                             # print(f"Peer {self.peer.peer_id}: Error updating bitfield for Peer {peer_sending_msg} - {e}")
                             pass
@@ -156,12 +204,16 @@ class MessageHandler:
                                 break
                     
                     # Send interested or not interested message
+                    # after building `we_are_interested` boolean
                     if we_are_interested:
-                        # print(f"Peer {self.peer.peer_id}: Peer {peer_sending_msg} has pieces we need - sending INTERESTED")
                         self.sendMessage(socket_connected, Message(2, b''), peer_sending_msg)
+                        if peer_sending_msg in self.peer.neighbor_states:
+                            self.peer.neighbor_states[peer_sending_msg]['we_interested'] = True
                     else:
                         # print(f"Peer {self.peer.peer_id}: Peer {peer_sending_msg} has no pieces we need - sending NOT INTERESTED")
                         self.sendMessage(socket_connected, Message(3, b''), peer_sending_msg)
+                        if peer_sending_msg in self.peer.neighbor_states:
+                            self.peer.neighbor_states[peer_sending_msg]['we_interested'] = False
                 
                 except Exception as e:
                     # print(f"Peer {self.peer.peer_id}: Error processing bitfield from Peer {peer_sending_msg} - {e}")
@@ -220,6 +272,14 @@ class MessageHandler:
                 try:
                     self.peer.writePiece(piece_index, piece_data)
                     self.peer.bitfield.mark_have(piece_index)
+                    # Try assembling the final file if we now have all pieces
+                    try:
+                        assembled = self.peer.assemble_file()
+                        if assembled:
+                            with open(f"../log_peer_{self.peer.peer_id}.log", "a") as log_file:
+                                log_file.write(f"{datetime.datetime.now().strftime('%c')}: Peer {self.peer.peer_id} assembled the complete file from pieces.\n")
+                    except Exception:
+                        pass
                     # print(f"Peer {self.peer.peer_id}: Successfully saved piece {piece_index}")
                     
                     # Log download completion for this piece

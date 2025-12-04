@@ -58,6 +58,8 @@ class PeerClass:
                 pass
         
         self.bitfield = BitfieldManager(total_size=file_size, piece_size=piece_size, peer_dir=self.peer_dir, has_complete=(has_file == 1))
+        # remember configured file name for read/write
+        self.file_name = file_name
         
         # Initialize choking handler
         self.choking_handler = ChokingHandler(
@@ -146,7 +148,8 @@ class PeerClass:
             'bytes_received': 0,
             'last_rate_calc': time.time(),
             'bitfield': None,  # Store their bitfield
-            'pending_requests': set()  # Track piece indices we've requested from this peer
+            'pending_requests': set(),  # Track piece indices we've requested from this peer
+            'we_interested': False  # whether *we* have sent INTERESTED to this neighbor
         }
         # print(f"Peer {self.peer_id}: Initialized neighbor state for Peer {peer_id} (choked=True, interested=False)")
     
@@ -224,43 +227,58 @@ class PeerClass:
         return random.choice(available_pieces)
     
     def readPiece(self, piece_index):
-        # Find the file in peer directory
+        # Try reading from per-piece file first
+        piece_path = Path(self.peer_dir) / f"piece_{piece_index}"
+        if piece_path.exists():
+            with open(piece_path, 'rb') as pf:
+                return pf.read()
+
+        # Fall back to reading from a monolithic file if present
         import os
-        file_list = [f for f in os.listdir(self.peer_dir) if os.path.isfile(os.path.join(self.peer_dir, f)) and not f.endswith('.log')]
+        file_list = [f for f in os.listdir(self.peer_dir) if os.path.isfile(os.path.join(self.peer_dir, f)) and not f.endswith('.log') and not f.startswith('piece_')]
         if not file_list:
-            raise FileNotFoundError(f"No file found in {self.peer_dir}")
-        
+            raise FileNotFoundError(f"No file or piece files found in {self.peer_dir}")
+
         file_path = Path(self.peer_dir) / file_list[0]
-        
+
         offset = piece_index * self.bitfield.piece_size
         piece_size = self.bitfield.piece_size
-        
+
         # Last piece might be smaller
         if piece_index == self.bitfield.num_pieces - 1:
             remaining = self.bitfield.total_size - offset
             piece_size = min(piece_size, remaining)
-        
+
         with open(file_path, 'rb') as f:
             f.seek(offset)
             return f.read(piece_size)
     
     def writePiece(self, piece_index, data):
-        file_path = Path(self.peer_dir) / self.file_name  # Default filename
-        
-        offset = piece_index * self.bitfield.piece_size
-        
-        # Create/open file in read-write binary mode
-        with open(file_path, 'r+b' if file_path.exists() else 'wb') as f:
-            # Ensure file is large enough
-            f.seek(0, 2)  # Seek to end
-            current_size = f.tell()
-            if current_size < self.bitfield.total_size:
-                f.seek(self.bitfield.total_size - 1)
-                f.write(b'\0')
-            
-            # Write the piece
-            f.seek(offset)
-            f.write(data)
+        # Write piece as a separate per-piece file (safer across unordered arrivals)
+        piece_path = Path(self.peer_dir) / f"piece_{piece_index}"
+        os.makedirs(self.peer_dir, exist_ok=True)
+        with open(piece_path, 'wb') as pf:
+            pf.write(data)
+
+    def assemble_file(self):
+        """
+        Assemble per-piece files into the final file if all pieces are present.
+        Returns True if assembly was performed, False otherwise.
+        """
+        missing = self.bitfield.missing()
+        if missing:
+            return False
+
+        final_path = Path(self.peer_dir) / self.file_name
+        with open(final_path, 'wb') as out:
+            for i in range(self.bitfield.num_pieces):
+                piece_path = Path(self.peer_dir) / f"piece_{i}"
+                if not piece_path.exists():
+                    raise FileNotFoundError(f"Missing piece {i} while assembling final file")
+                with open(piece_path, 'rb') as pf:
+                    out.write(pf.read())
+
+        return True
     
     def startPeer(self):
         print("\nPeer {}: set address to: {}, set Port to: {}, set has_file to: {} ".format(self.peer_id, self.host, self.port, self.has_file))

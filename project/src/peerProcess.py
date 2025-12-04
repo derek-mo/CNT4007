@@ -31,6 +31,10 @@ if __name__ == "__main__":
     peerInfo = readPeerInfo()
     host, port, hasFile = peerInfo[peerId]
     
+    print("Reading Common.cfg: Number of Preferred Neighbors: {}, Unchoking Interval: {}, Optimistic Unchoking Interval: {}, File Name: {}, File Size: {}, Piece Size: {}".format(
+        commonInfo[0], commonInfo[1], commonInfo[2], commonInfo[3], commonInfo[4], commonInfo[5]
+    ))
+
     peer = PeerClass(
         peer_id=peerId,
         host=host,
